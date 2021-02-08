@@ -30,6 +30,8 @@ document.getElementById("actualPlayer").addEventListener("loadedmetadata", funct
     document.getElementById("pb").max = document.getElementById("actualPlayer").duration;
     document.getElementById("pb").value = 0;
     getLyrics();
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("loaded").style.display = "";
 });
 
 document.getElementById("actualPlayer").addEventListener("timeupdate", function() {
@@ -65,6 +67,7 @@ document.getElementById("actualPlayer").addEventListener("error", function(error
     document.getElementById("loaded").style.display = "none";
     document.getElementById("progress").innerHTML = "Error retrieving song. Retrying...";
     var id = document.getElementById("player").getAttribute("playing-id");
+    
 });
 
 document.getElementById("pb").addEventListener("input", function() {
@@ -201,10 +204,10 @@ function dumpIntoSection(location, id) {
                 cover.alt = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
                 div.appendChild(cover);
                 var title = document.createElement("H3");
-                if(json.data.data[c].title_short.length <= 40) {
-                  title.innerHTML = json.data.data[c].title_short;
-                }else{
-                  title.innerHTML = json.data.data[c].title_short.substring(0,40).trim()+"...";
+                if (json.data.data[c].title_short.length <= 40) {
+                    title.innerHTML = json.data.data[c].title_short;
+                } else {
+                    title.innerHTML = json.data.data[c].title_short.substring(0,40).trim()+"...";
                 }
                 div.appendChild(title);
                 var author = document.createElement("H4");
@@ -692,8 +695,6 @@ function checkQueue() {
                 document.getElementById("actualPlayer").src = q[pos].url;
                 makePlayerVisible();
                 showQC();
-                document.getElementById("loading").style.display = "none";
-                document.getElementById("loaded").style.display = "";
             } else {
                 makePlayerVisible();
                 document.getElementById("loaded").style.display = "none";
@@ -709,8 +710,6 @@ function checkQueue() {
                     var q = JSON.parse(localStorage.getItem("queue"));
                     q[0].url = json[0].url;
                     localStorage.setItem("queue", JSON.stringify(q));
-                    document.getElementById("loading").style.display = "none";
-                    document.getElementById("loaded").style.display = "";
                     showQC();
                 }
             }
