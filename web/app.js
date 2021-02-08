@@ -67,7 +67,7 @@ document.getElementById("actualPlayer").addEventListener("error", function(error
     document.getElementById("loaded").style.display = "none";
     document.getElementById("progress").innerHTML = "Error retrieving song. Retrying...";
     var id = document.getElementById("player").getAttribute("playing-id");
-    
+
 });
 
 document.getElementById("pb").addEventListener("input", function() {
@@ -209,6 +209,7 @@ function dumpIntoSection(location, id) {
                 div.appendChild(title);
                 var author = document.createElement("H4");
                 author.innerHTML = json.data.data[c].artist.name;
+                author.title = json.data.data[c].artist.name;
                 div.appendChild(author);
                 document.getElementById(id).appendChild(div);
             }
@@ -392,6 +393,7 @@ function search() {
                         div.appendChild(title);
                         var author = document.createElement("H4");
                         author.innerHTML = json.results.data[c].artist.name;
+                        author.title = json.results.data[c].artist.name;
                         div.appendChild(author);
                         var type = document.createElement("H3");
                         var typeIcon = document.createElement("SPAN");
@@ -418,10 +420,16 @@ function search() {
                     cover.alt = "Cover of " + json.results.result.tracks[c].name + " by " + json.results.result.tracks[c].artistName;
                     div.appendChild(cover);
                     var title = document.createElement("H3");
-                    title.innerHTML = json.results.result.tracks[c].name;
+                    if(json.results.result.tracks[c].name.length <= 40) {
+                      title.innerHTML = json.results.result.tracks[c].name;
+                    }else{
+                      title.innerHTML = json.results.result.tracks[c].name.substring(0,40).trim()+"...";
+                    }
+                    title.title = json.results.result.tracks[c].name
                     div.appendChild(title);
                     var author = document.createElement("H4");
                     author.innerHTML = json.results.result.tracks[c].artistName;
+                    author.title = json.results.result.tracks[c].artistName;
                     div.appendChild(author);
                     var type = document.createElement("H3");
                     var typeIcon = document.createElement("SPAN");
