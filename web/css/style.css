@@ -125,7 +125,7 @@ button {
 
 .player #metadata {
     float:left;
-    width:calc(100% - 200px);
+    width:calc(100% - 240px);
 }
 
 .player a {
