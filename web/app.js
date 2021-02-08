@@ -197,12 +197,16 @@ function dumpIntoSection(location, id) {
                 cover.alt = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
                 div.appendChild(cover);
                 var title = document.createElement("H3");
-                title.innerHTML = json.data.data[c].title_short;
+                if(json.data.data[c].title_short.length <= 40) {
+                  title.innerHTML = json.data.data[c].title_short;
+                }else{
+                  title.innerHTML = json.data.data[c].title_short.substring(0,40).trim()+"...";
+                }
                 div.appendChild(title);
                 var author = document.createElement("H4");
                 author.innerHTML = json.data.data[c].artist.name;
                 div.appendChild(author);
-                document.getElementById(id).appendChild(div);  
+                document.getElementById(id).appendChild(div);
             }
         }
     }
@@ -305,7 +309,7 @@ function getStream(id) {
 }
 
 function makePlayerVisible() {
-    if (document.getElementById("player").visible == "1") {return;} 
+    if (document.getElementById("player").visible == "1") {return;}
     else {
         document.getElementById("player").style = "margin-bottom:0;";
         document.getElementById("player").visible = "1";
@@ -315,7 +319,7 @@ function makePlayerVisible() {
 }
 
 function hidePlayer() {
-    if (document.getElementById("player").visible == "0") {return;} 
+    if (document.getElementById("player").visible == "0") {return;}
     else {
         document.getElementById("player").style = "margin-bottom:-200px;";
         document.getElementById("player").visible = "0";
@@ -375,7 +379,11 @@ function search() {
                         cover.alt = "Cover of " + json.results.data[c].album.title + " by " + json.results.data[c].artist.name;
                         div.appendChild(cover);
                         var title = document.createElement("H3");
-                        title.innerHTML = json.results.data[c].title_short;
+                        if(json.results.data[c].title_short.length <= 40) {
+                          title.innerHTML = json.results.data[c].title_short;
+                        }else{
+                          title.innerHTML = json.results.data[c].title_short.substring(0,40).trim()+"...";
+                        }
                         div.appendChild(title);
                         var author = document.createElement("H4");
                         author.innerHTML = json.results.data[c].artist.name;
@@ -387,7 +395,7 @@ function search() {
                         type.appendChild(typeIcon);
                         type.innerHTML = type.innerHTML + " Track";
                         div.appendChild(type);
-                        document.getElementById("results").appendChild(div); 
+                        document.getElementById("results").appendChild(div);
                     } else {
                         console.log(json.results.data[c]);
                     }
@@ -417,7 +425,7 @@ function search() {
                     type.appendChild(typeIcon);
                     type.innerHTML = type.innerHTML + " Track";
                     div.appendChild(type);
-                    document.getElementById("results").appendChild(div);    
+                    document.getElementById("results").appendChild(div);
                 }
             }
         }
