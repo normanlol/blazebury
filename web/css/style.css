@@ -25,14 +25,14 @@ button {
 }
 
 @keyframes entrance {
-  from {
-    transform: translate(0px, 10px);
-    opacity: 0;
-  }
-  to {
-    transform: translate(0px, 0px);
-    opacity: 1;
-  }
+    from {
+        transform: translate(0px, 10px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(0px, 0px);
+        opacity: 1;
+    }
 }
 
 .header {
@@ -212,9 +212,9 @@ button {
     float:left;
     cursor:pointer;
     margin-left:5px;
-    animation-name: entrance;
-    animation-duration: 0.5s;
-    animation-iteration-count: 1;
+    animation-name:entrance;
+    animation-duration:0.5s;
+    animation-iteration-count:1;
 }
 
 .sectBlob img {
