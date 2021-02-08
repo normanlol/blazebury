@@ -116,13 +116,9 @@ function refresh() {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "none";
-                if (process && process.versions.electron) {
-                    document.getElementById("nodeVers").innerHTML = process.versions.node;
-                    document.getElementById("chromeVers").innerHTML = process.versions.chrome;
-                    document.getElementById("electronVers").innerHTML = process.versions.electron;
-                } else {
-                    document.getElementById("appExclusive").style.display = "none";
-                }
+                document.getElementById("nodeVers").innerHTML = process.versions.node;
+                document.getElementById("chromeVers").innerHTML = process.versions.chrome;
+                document.getElementById("electronVers").innerHTML = process.versions.electron;
             } else if (window.location.hash == "#search") {
                 document.getElementById("settings").style.display = "none";
                 document.getElementById("home").style.display = "none";
@@ -711,6 +707,11 @@ function checkQueue() {
                     q[0].url = json[0].url;
                     localStorage.setItem("queue", JSON.stringify(q));
                     showQC();
+<<<<<<< HEAD
+=======
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("loaded").style.display = "";
+>>>>>>> parent of 53c0556... fixed a few more bugs
                 }
             }
         }
