@@ -63,7 +63,8 @@ document.getElementById("actualPlayer").addEventListener("ended", function () {
 document.getElementById("actualPlayer").addEventListener("error", function(error) {
     document.getElementById("loading").style.display = "";
     document.getElementById("loaded").style.display = "none";
-
+    document.getElementById("progress").innerHTML = "Error retrieving song. Retrying...";
+    var id = document.getElementById("player").getAttribute("playing-id");
 });
 
 document.getElementById("pb").addEventListener("input", function() {
@@ -677,10 +678,10 @@ function checkQueue() {
             document.getElementById("player").setAttribute("playing-id", q[pos].track.id);
             if (q[pos].url) {
                 document.getElementById("actualPlayer").src = q[pos].url;
-                document.getElementById("loading").style.display = "none";
-                document.getElementById("loaded").style.display = "";
                 makePlayerVisible();
                 showQC();
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("loaded").style.display = "";
             } else {
                 makePlayerVisible();
                 document.getElementById("loaded").style.display = "none";
@@ -696,9 +697,9 @@ function checkQueue() {
                     var q = JSON.parse(localStorage.getItem("queue"));
                     q[0].url = json[0].url;
                     localStorage.setItem("queue", JSON.stringify(q));
-                    document.getElementById("loaded").style.display = "";
-                    document.getElementById("loading").style.display = "none";
                     showQC();
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("loaded").style.display = "";
                 }
             }
         }
