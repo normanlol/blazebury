@@ -8,6 +8,7 @@ body {
     color:white;
     font-family:Helvetica, Verdana;
     margin:0;
+    margin-top: 60px;
     padding:0;
     overflow-x:hidden;
 }
@@ -36,6 +37,10 @@ button {
 }
 
 .header {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 999;
     background:black;
     height:25px;
     width:100%;
