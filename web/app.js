@@ -382,12 +382,13 @@ function search() {
                         cover.src = json.results.data[c].album.cover_big;
                         cover.title = "Cover of " + json.results.data[c].album.title + " by " + json.results.data[c].artist.name;
                         cover.alt = "Cover of " + json.results.data[c].album.title + " by " + json.results.data[c].artist.name;
+                        cover.onerror = function () {this.src = "icon.png";}
                         div.appendChild(cover);
                         var title = document.createElement("H3");
-                        if(json.results.data[c].title_short.length <= 40) {
-                          title.innerHTML = json.results.data[c].title_short;
-                        }else{
-                          title.innerHTML = json.results.data[c].title_short.substring(0,40).trim()+"...";
+                        if (json.results.data[c].title_short.length <= 40) {
+                            title.innerHTML = json.results.data[c].title_short;
+                        } else {
+                            title.innerHTML = json.results.data[c].title_short.substring(0,40).trim() + "...";
                         }
                         title.title = json.results.data[c].title_short
                         div.appendChild(title);
