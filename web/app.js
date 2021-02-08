@@ -206,6 +206,7 @@ function dumpIntoSection(location, id) {
                 }else{
                   title.innerHTML = json.data.data[c].title_short.substring(0,40).trim()+"...";
                 }
+                title.title = json.data.data[c].title_short
                 div.appendChild(title);
                 var author = document.createElement("H4");
                 author.innerHTML = json.data.data[c].artist.name;
@@ -388,6 +389,7 @@ function search() {
                         }else{
                           title.innerHTML = json.results.data[c].title_short.substring(0,40).trim()+"...";
                         }
+                        title.title = json.data.data[c].title_short
                         div.appendChild(title);
                         var author = document.createElement("H4");
                         author.innerHTML = json.results.data[c].artist.name;
