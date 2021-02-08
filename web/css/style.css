@@ -80,6 +80,10 @@ button {
     margin-top:4px;
 }
 
+.rightwing a {
+    cursor:initial;
+}
+
 .page {
     width:100%;
     height:100%;
