@@ -707,11 +707,6 @@ function checkQueue() {
                     q[0].url = json[0].url;
                     localStorage.setItem("queue", JSON.stringify(q));
                     showQC();
-<<<<<<< HEAD
-=======
-                    document.getElementById("loading").style.display = "none";
-                    document.getElementById("loaded").style.display = "";
->>>>>>> parent of 53c0556... fixed a few more bugs
                 }
             }
         }
