@@ -112,6 +112,9 @@ function refresh() {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("nodeVers").innerHTML = process.versions.node;
+                document.getElementById("chromeVers").innerHTML = process.versions.chrome;
+                document.getElementById("electronVers").innerHTML = process.versions.electron;
             } else if (window.location.hash == "#search") {
                 document.getElementById("settings").style.display = "none";
                 document.getElementById("home").style.display = "none";
