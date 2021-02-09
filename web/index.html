@@ -73,7 +73,7 @@
                         </select>
                     </div>
                     <div class="setting">
-                        <label>Discord RPC ID:</label>
+                        <label for="discordRpcId">Discord RPC ID:</label>
                         <input placeholder="Generate one @ discord.com/developers - Required for Discord Rich Presence" name="discordRpcId" id="discordRpcId">
                     </div>
                     <button onclick="saveSettings();" style="background:black !important">Save Settings</button>
@@ -111,9 +111,24 @@
             <div id="artist" class="page">
                 <div class="infoBox">
                     <img id="artistCover">
-                    <div>
+                    <div class="ibInner">
                         <h1 id="artName"></h1>
                         <p id="artBio"></p>
+                        <div class="stats">
+                            <h2 id="artAlbCountContainer"><span class="material-icons">album</span> <span id="albumCount"></span> albums released</h2>
+                            <h2><span class="material-icons">person_add</span> <span id="artFollowerCount"></span> <span id="artNumCat1"></span> on <span id="artNumSrc1"></span></h2>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="sectionTitle">Albums</h2>
+                    <div class="section">
+                        <div class="secLoad" id="artAlbumsLoad">
+                            Loading...
+                        </div>
+                        <div class="sectInner" id="artAlbums">
+
+                        </div>
                     </div>
                 </div>
             </div>

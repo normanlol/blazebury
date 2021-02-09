@@ -352,6 +352,9 @@ function getSettings() {
         var json = JSON.parse(xhr.responseText);
         if (json.lastFmKey) {document.getElementById("lfmKey").value = json.lastFmKey;}
         if (json.dataSource) {document.getElementById("dataSrc").value = json.dataSource;}
+        if (json.discordRpc) {document.getElementById("discordRpc").value = json.discordRpc;}
+        if (json.discordRpcId) {document.getElementById("discordRpcId").value = json.discordRpcId;}
+        if (json.onClosePref) {document.getElementById("onClosePref").value = json.onClosePref;}
         document.getElementById("sLoading").style.display = "none";
         document.getElementById("sContents").style.display = "";
     }
@@ -871,11 +874,20 @@ function getArtist() {
     xhr.onload = function () {
         var json = JSON.parse(xhr.responseText);
         if (json.source == "deezer") {
-            // tba
+            document.getElementById("artistCover").src = json.data.picture_xl;
+            document.getElementById("artName").innerHTML = json.data.name;
+            document.getElementById("albumCount").innerHTML = json.data.nb_album;
+            document.getElementById("artFollowerCount").innerHTML = json.data.nb_fan.toLocaleString();
+            document.getElementById("artNumCat1").innerHTML = "followers";
+            document.getElementById("artNumSrc1").innerHTML = "Deezer";
         } else if (json.source == "lastfm") {
             document.getElementById("artistCover").src = json.data.images[json.data.images.length - 1];
             document.getElementById("artName").innerHTML = json.data.name;
             document.getElementById("artBio").innerHTML = json.data.summary;
+            document.getElementById("artFollowerCount").innerHTML = json.data.listeners.toLocaleString();
+            document.getElementById("artNumCat1").innerHTML = "listeners";
+            document.getElementById("artNumSrc1").innerHTML = "Last.fm";
+            document.getElementById("artAlbCountContainer").style.display = "none";
         }
     }
 }
