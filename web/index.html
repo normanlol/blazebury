@@ -109,27 +109,52 @@
                 <p id="lyricsPage">Loading...</p>
             </div>
             <div id="artist" class="page">
-                <div class="infoBox">
-                    <img id="artistCover">
-                    <div class="ibInner">
-                        <h1 id="artName"></h1>
-                        <p id="artBio"></p>
-                        <div class="stats">
-                            <h2 id="artAlbCountContainer"><span class="material-icons">album</span> <span id="albumCount"></span> albums released</h2>
-                            <h2><span class="material-icons">person_add</span> <span id="artFollowerCount"></span> <span id="artNumCat1"></span> on <span id="artNumSrc1"></span></h2>
+                <div id="artistPage">
+                    <div class="infoBox">
+                        <img id="artistCover">
+                        <div class="ibInner">
+                            <h1 id="artName"></h1>
+                            <p id="artBio"></p>
+                            <div class="stats">
+                                <h2 id="artAlbCountContainer"><span class="material-icons">album</span> <span id="albumCount"></span> albums released</h2>
+                                <h2><span class="material-icons">person_add</span> <span id="artFollowerCount"></span> <span id="artNumCat1"></span> on <span id="artNumSrc1"></span></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="sectionTitle">Albums</h2>
+                        <div class="section">
+                            <div class="secLoad" id="artAlbumsLoad">
+                                Loading...
+                            </div>
+                            <div class="sectInner" id="artAlbums"></div>
                         </div>
                     </div>
                 </div>
-                <div>
-                    <h2 class="sectionTitle">Albums</h2>
-                    <div class="section">
-                        <div class="secLoad" id="artAlbumsLoad">
-                            Loading...
+                <div id="artistLoad" class="secLoad">
+                    Loading...
+                </div>
+            </div>
+            <div id="album" class="page">
+                <div id="albumPage">
+                    <div class="infoBox">
+                        <img id="albumCover">
+                        <div class="ibInner">
+                            <h1 id="albName"></h1>
+                            <a id="albArtLink"><h2 id="albArtist"></h2></a>
+                            <div class="stats">
+                                <h2><span class="material-icons">album</span> <span id="trackCount"></span> tracks</h2>
+                                <h2><span class="material-icons">person_add</span> <span id="albFollowerCount"></span> <span id="albNumCat1"></span> on <span id="albNumSrc1"></span></h2>
+                            </div>
                         </div>
-                        <div class="sectInner" id="artAlbums">
-
+                        <div id="tracklist"></div>
+                        <div id="tracklistErr" style="display:none;">
+                            <p>The scraper does not have a valid tracklist.</p>
                         </div>
                     </div>
+                </div>
+                <div class="secLoad" id="albumLoad">
+                    Loading...
                 </div>
             </div>
         </div>
@@ -145,6 +170,7 @@
                         <button title="Toggle playback." id="togglePlayback" onclick="togglePlayback();" class="material-icons">play_arrow</button>
                         <a title="View queue." id="queueLink" href="#queue"><button class="material-icons">queue_music</button></a>
                         <a href="#lyrics"><button id="lyrics" title="Get the lyrics to this song." class="material-icons">audiotrack</button></a>
+                        <button id="loopBtn" title="Loop queue/currently playing song." class="material-icons" onclick="toggleLoop();">repeat</button>
                         <button id="nextBtn" title="Go to the next track." onclick="goToNext();" class="material-icons">skip_next</button>
                     </div>
                 </div>

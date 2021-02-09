@@ -1,5 +1,6 @@
 refresh();
 checkQueue();
+setLoop();
 if (checkPresence() == "true") {
     setPresence("pause");
 }
@@ -7,14 +8,23 @@ document.getElementById("loaded").style.display = "none";
 document.getElementById("progress").innerHTML = "No song is loaded.";
 
 window.addEventListener("click", function() {
-    if(menuVisible == true) {toggleMenu("hide");}
+    if (menuVisible == true) {toggleMenu("hide");}
 });
 
 window.addEventListener("contextmenu", function(e) {
-    if (e.target.classList.contains("sectBlob") || e.target.parentElement !== null && e.target.parentElement.classList.contains("sectBlob")) {
+    if (
+        e.target.classList.contains("sectBlob") || 
+        e.target.parentElement !== null && e.target.parentElement.classList.contains("sectBlob") || 
+        e.target.classList.contains("chip") ||
+        e.target.parentElement !== null && e.target.parentElement.classList.contains("chip") 
+    ) {
         e.preventDefault();
-        if (e.target.parentElement.classList.contains("sectBlob")) { var sId = e.target.parentElement.id;}
+        if (
+            e.target.parentElement.classList.contains("sectBlob") ||
+            e.target.parentElement.classList.contains("chip")
+        ) { var sId = e.target.parentElement.id;}
         else { var sId = e.target.id; }
+        console.log(e.target)
         document.querySelector(".menu").setAttribute("id", sId + "_context");
         var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
         const origin = {
@@ -55,9 +65,25 @@ document.getElementById("actualPlayer").addEventListener("ended", function () {
         var nPos = (pos + 1).toString();
         var nPosP = pos + 1;
         if (q[nPosP]) {
-            setQueuePosition(nPos, true);
+            if (!localStorage.getItem("loopMode") || localStorage.getItem("loopMode") !== "2") {
+                setQueuePosition(nPos, true);
+            } else {
+                setQueuePosition(parseInt(pos), true);
+            }
         } else {
-            return;
+            if (localStorage.getItem("loopMode") && localStorage.getItem("loopMode") == "1") {
+                setQueuePosition(0, true);
+            } else {
+                // end of queue
+            }
+        }
+    } else {
+        if (localStorage.getItem("loopMode") && localStorage.getItem("loopMode") !== "0") {
+            document.getElementById("actualPlayer").play();
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("loaded").style.display = "";
+        } else {
+
         }
     }
 })
@@ -66,8 +92,32 @@ document.getElementById("actualPlayer").addEventListener("error", function(error
     document.getElementById("loading").style.display = "";
     document.getElementById("loaded").style.display = "none";
     document.getElementById("progress").innerHTML = "Error retrieving song. Retrying...";
-    var id = document.getElementById("player").getAttribute("playing-id");
-
+    var artist = document.getElementById("artistName").innerHTML;
+    var track = document.getElementById("trackName").innerHTML;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/api/get/track/stream?artist=" + artist + "&track=" + track)
+    xhr.send();
+    xhr.onload = function () {
+        var json = JSON.parse(xhr.responseText);
+        if (!json.err) {
+            document.getElementById("actualPlayer").src = json[0].url;
+            if (localStorage.getItem("queue")) {
+                var q = JSON.parse(localStorage.getItem("queue"));
+                var pos = parseInt(localStorage.getItem("queuePosition"));
+                q[pos].url = json[0].url;
+                q = JSON.stringify(q);
+                localStorage.setItem("queue", q);
+            }
+            document.getElementById("progress").innerHTML = "Loading stream data...";
+            document.getElementById("actualPlayer").play();
+        } else {
+            document.getElementById("progress").innerHTML = "Could not get song.";
+            if (localStorage.getItem("queue")) {
+                goToNext();
+                removeFromQueue(parseInt(localStorage.getItem("queuePosition")));
+            }
+        }
+    }
 });
 
 document.getElementById("pb").addEventListener("input", function() {
@@ -98,6 +148,7 @@ function refresh() {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
                 dumpIntoSection("/api/get/trending", "sect1");
             } else if (window.location.hash == "#settings") {
                 document.getElementById("settings").style.display = "";
@@ -107,6 +158,7 @@ function refresh() {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
                 getSettings();
             } else if (window.location.hash == "#about") {
                 document.getElementById("settings").style.display = "none";
@@ -116,6 +168,7 @@ function refresh() {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
                 document.getElementById("nodeVers").innerHTML = process.versions.node;
                 document.getElementById("chromeVers").innerHTML = process.versions.chrome;
                 document.getElementById("electronVers").innerHTML = process.versions.electron;
@@ -127,6 +180,7 @@ function refresh() {
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
                 document.getElementById("q").focus();
             } else if (window.location.hash == "#queue") {
                 document.getElementById("queue").style.display = "";
@@ -136,6 +190,7 @@ function refresh() {
                 document.getElementById("search").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
                 queuePage();
             } else if (window.location.hash == "#lyrics") {
                 document.getElementById("queue").style.display = "none";
@@ -145,6 +200,7 @@ function refresh() {
                 document.getElementById("search").style.display = "none";
                 document.getElementById("lyrics").style.display = "";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
             } else if (window.location.hash.split("#").slice(1)[0] == "artist") {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("settings").style.display = "none";
@@ -153,7 +209,18 @@ function refresh() {
                 document.getElementById("search").style.display = "none";
                 document.getElementById("lyrics").style.display = "none";
                 document.getElementById("artist").style.display = "";
+                document.getElementById("album").style.display = "none";
                 getArtist();
+            } else if (window.location.hash.split("#").slice(1)[0] == "album") {
+                document.getElementById("queue").style.display = "none";
+                document.getElementById("settings").style.display = "none";
+                document.getElementById("home").style.display = "none";
+                document.getElementById("about").style.display = "none";
+                document.getElementById("search").style.display = "none";
+                document.getElementById("lyrics").style.display = "none";
+                document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "";
+                getAlbum();
             } else {
                 document.getElementById("settings").style.display = "none";
                 document.getElementById("about").style.display = "none";
@@ -162,6 +229,7 @@ function refresh() {
                 document.getElementById("home").style.display = "";
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("artist").style.display = "none";
+                document.getElementById("album").style.display = "none";
                 dumpIntoSection("/api/get/trending", "sect1");
             }
         } else {
@@ -172,6 +240,7 @@ function refresh() {
             document.getElementById("queue").style.display = "none";
             document.getElementById("lyrics").style.display = "none";
             document.getElementById("artist").style.display = "none";
+            document.getElementById("album").style.display = "none";
             dumpIntoSection("/api/get/trending", "sect1");
         }
     }, 10)
@@ -190,28 +259,81 @@ function dumpIntoSection(location, id) {
             document.getElementById(id+"Load").style.display = "none";
             document.getElementById(id).style.display = "";
             for (var c in json.data.data) {
-                var div = document.createElement("DIV");
-                div.classList.add("sectBlob");
-                div.id = json.data.data[c].id;
-                div.onclick = function () {getStream(this.id)}
-                var cover = document.createElement("IMG");
-                cover.src = json.data.data[c].album.cover_big;
-                cover.title = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
-                cover.alt = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
-                div.appendChild(cover);
-                var title = document.createElement("H3");
-                if (json.data.data[c].title_short.length <= 40) {
-                    title.innerHTML = json.data.data[c].title_short;
-                } else {
-                    title.innerHTML = json.data.data[c].title_short.substring(0,40).trim()+"...";
+                if (json.data.data[c].type == "track") {
+                    var div = document.createElement("DIV");
+                    div.classList.add("sectBlob");
+                    div.id = json.data.data[c].id;
+                    div.onclick = function () {getStream(this.id)}
+                    var cover = document.createElement("IMG");
+                    cover.src = json.data.data[c].album.cover_big;
+                    cover.title = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
+                    cover.alt = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
+                    cover.onerror = function () {this.src = "icon.png";}
+                    div.appendChild(cover);
+                    var title = document.createElement("H3");
+                    if (json.data.data[c].title_short.length <= 40) {
+                        title.innerHTML = json.data.data[c].title_short;
+                    } else {
+                        title.innerHTML = json.data.data[c].title_short.substring(0,40).trim()+"...";
+                    }
+                    title.title = json.data.data[c].title_short
+                    div.appendChild(title);
+                    var author = document.createElement("H4");
+                    author.innerHTML = json.data.data[c].artist.name;
+                    author.title = json.data.data[c].artist.name;
+                    div.appendChild(author);
+                    document.getElementById(id).appendChild(div);
+                } else if (json.data.data[c].type == "album") {
+                    var lnk = document.createElement("A");
+                    lnk.href = "#album#" + json.data.data[c].id
+                    var div = document.createElement("DIV");
+                    div.classList.add("sectBlob");
+                    var cover = document.createElement("IMG");
+                    cover.src = json.data.data[c].cover_big;
+                    div.appendChild(cover);
+                    var title = document.createElement("H3");
+                    if (json.data.data[c].title.length <= 40) {
+                        title.innerHTML = json.data.data[c].title;
+                    } else {
+                        title.innerHTML = json.data.data[c].title.substring(0,40).trim()+"...";
+                    }
+                    title.title = json.data.data[c].title_short
+                    div.appendChild(title);
+                    var fans = document.createElement("H4");
+                    fans.innerHTML = json.data.data[c].fans.toLocaleString() + " fans";
+                    div.appendChild(fans);
+                    lnk.append(div);
+                    document.getElementById(id).appendChild(lnk);
                 }
-                title.title = json.data.data[c].title_short
-                div.appendChild(title);
-                var author = document.createElement("H4");
-                author.innerHTML = json.data.data[c].artist.name;
-                author.title = json.data.data[c].artist.name;
-                div.appendChild(author);
-                document.getElementById(id).appendChild(div);
+            }
+        } else if (json.source == "lastfm") {
+            document.getElementById(id+"Load").style.display = "none";
+            document.getElementById(id).style.display = "";
+            for (var c in json.data.result) {
+                if (json.data.result[c].type == "album") {
+                    var lnk = document.createElement("A");
+                    lnk.href = "#album#" + json.data.result[c].name + ":::" + json.data.result[c].artistName;
+                    var div = document.createElement("DIV");
+                    div.classList.add("sectBlob");
+                    var cover = document.createElement("IMG");
+                    if (json.data.result[c].images) {cover.src = json.data.result[c].images[json.data.result[c].images.length - 1];}
+                    else {cover.src = "icon.png";}
+                    cover.onerror = function () {this.src = "icon.png";}
+                    div.appendChild(cover);
+                    var title = document.createElement("H3");
+                    if (json.data.result[c].name.length <= 40) {
+                        title.innerHTML = json.data.result[c].name;
+                    } else {
+                        title.innerHTML = json.data.result[c].name.substring(0,40).trim() + "...";
+                    }
+                    title.title = json.data.result[c].name
+                    div.appendChild(title);
+                    var fans = document.createElement("H4");
+                    fans.innerHTML = json.data.result[c].listeners.toLocaleString() + " listeners on Lastfm";
+                    div.appendChild(fans);
+                    lnk.append(div);
+                    document.getElementById(id).appendChild(lnk);
+                }
             }
         }
     }
@@ -271,7 +393,7 @@ function getStream(id) {
             document.getElementById("cover").src = cover;
             document.getElementById("artistLink").href = "#artist#" + json.data.artistName;
             document.getElementById("artistName").innerHTML = json.data.artistName;
-            document.getElementById("trackLink").href = "#album#" + json.data.albumName + ":" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName;
+            document.getElementById("trackLink").href = "#album#" + json.data.albumName + ":::" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName;
             document.getElementById("trackName").innerHTML = json.data.name;
             document.getElementById("progress").innerHTML = "Getting stream URL...";
             if (localStorage.getItem("queue")) {
@@ -285,7 +407,7 @@ function getStream(id) {
                         },
                         "track": {
                             "name": json.data.name,
-                            "link": "#album#" + json.data.albumName + ":" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
+                            "link": "#album#" + json.data.albumName + ":::" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
                             "id": json.data.name + "_" + json.data.artistName
                         }
                     }
@@ -354,7 +476,6 @@ function getSettings() {
         if (json.dataSource) {document.getElementById("dataSrc").value = json.dataSource;}
         if (json.discordRpc) {document.getElementById("discordRpc").value = json.discordRpc;}
         if (json.discordRpcId) {document.getElementById("discordRpcId").value = json.discordRpcId;}
-        if (json.onClosePref) {document.getElementById("onClosePref").value = json.onClosePref;}
         document.getElementById("sLoading").style.display = "none";
         document.getElementById("sContents").style.display = "";
     }
@@ -415,7 +536,7 @@ function search() {
                 for (var c in json.results.result.tracks) {
                     var div = document.createElement("DIV");
                     div.classList.add("sectBlob");
-                    div.id = json.results.result.tracks[c].name + ":" + json.results.result.tracks[c].artistName;
+                    div.id = json.results.result.tracks[c].name + ":::" + json.results.result.tracks[c].artistName;
                     div.onclick = function () {getStream(this.id)}
                     var cover = document.createElement("IMG");
                     cover.src = json.results.result.tracks[c].images[json.results.result.tracks[c].images.length - 1];
@@ -534,7 +655,7 @@ function addToQueue(id) {
                     xhr.send();
                     xhr.onload = function() {
                         var json2 = JSON.parse(xhr.responseText);
-                        var q = JSON.parse(q);
+                        var q = JSON.parse(localStorage.getItem("queue"));
                         q[q.length - 1].url = json2[0].url;
                         var q = JSON.stringify(q);
                         localStorage.setItem("queue", q);
@@ -546,7 +667,7 @@ function addToQueue(id) {
                     document.getElementById("cover").src = cover;
                     document.getElementById("artistLink").href = "#artist#" + json.data.artistName;
                     document.getElementById("artistName").innerHTML = json.data.artistName;
-                    document.getElementById("trackLink").href = "#album#" + json.data.albumName + ":" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName;
+                    document.getElementById("trackLink").href = "#album#" + json.data.albumName + ":::" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName;
                     document.getElementById("trackName").innerHTML = json.data.name;
                     var j = [
                         {
@@ -557,7 +678,7 @@ function addToQueue(id) {
                             },
                             "track": {
                                 "name": json.data.name,
-                                "link": "#album#" + json.data.albumName + ":" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
+                                "link": "#album#" + json.data.albumName + ":::" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
                                 "id": json.data.name + "_" + json.data.artistName
                             }
                         }
@@ -587,7 +708,7 @@ function addToQueue(id) {
                             },
                             "track": {
                                 "name": json.data.name,
-                                "link": "#album#" + json.data.albumName + ":" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
+                                "link": "#album#" + json.data.albumName + ":::" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
                                 "id": json.data.name + "_" + json.data.artistName
                             }
                         }
@@ -646,13 +767,13 @@ function addToQueue(id) {
                     },
                     "track": {
                         "name": json.data.name,
-                        "link": "#album#" + json.data.albumName + ":" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
+                        "link": "#album#" + json.data.albumName + ":::" + json.data.artistName + "#track#" + json.data.name + "_" + json.data.artistName,
                         "id": json.data.name + "_" + json.data.artistName
                     }
                 };
                 q.push(ni);
                 localStorage.setItem("queue", JSON.stringify(q));
-                xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artist.name) + "&track=" + encodeURIComponent(json.data.title));
+                xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artistName) + "&track=" + encodeURIComponent(json.data.name));
                 xhr.send();
                 xhr.onload = function() {
                     var j2 = JSON.parse(xhr.responseText);
@@ -760,6 +881,7 @@ function setQueuePosition(place, playChoice) {
     var q = JSON.parse(localStorage.getItem("queue"));
     var pos = parseInt(place);
     if (q[pos]) {
+        if (q[pos][0]) {}
         document.getElementById("cover").src = q[pos].cover;
         document.getElementById("trackLink").href = q[pos].track.link;
         document.getElementById("trackName").innerHTML = q[pos].track.name;
@@ -782,6 +904,11 @@ function setQueuePosition(place, playChoice) {
             xhr.onload = function() {
                 document.getElementById("progress").innerHTML = "Loading stream data...";
                 var json = JSON.parse(xhr.responseText);
+                if (json.err) {
+                    document.getElementById("progress").innerHTML = "We could not find a valid source for this.<br>We will skip to the next track in 5 seconds...";
+                    setTimeout(function () {removeFromQueue(localStorage.getItem("queuePosition"));}, 5000)
+                    return;
+                }
                 document.getElementById("actualPlayer").src = json[0].url;
                 q[pos].url = json[0].url;
                 var qs = JSON.stringify(q);
@@ -807,6 +934,8 @@ function goToPrev() {
     var pPos = pos - 1;
     if (q[pPos]) {
         setQueuePosition(pPos, true);
+    } else {
+        document.getElementById("actualPlayer").currentTime = 0;
     }
 }
 
@@ -816,6 +945,65 @@ function goToNext() {
     var nPos = pos + 1;
     if (q[nPos]) {
         setQueuePosition(nPos, true);
+    } else if (localStorage.getItem("loopMode") && localStorage.getItem("loopMode") == "1") {
+        setQueuePosition(0, true);
+    } else if (localStorage.getItem("loopMode") && localStorage.getItem("loopMode") == "2") {
+        setQueuePosition(pos, true);
+    }
+}
+
+function removeFromQueue(pos) {
+    var q = JSON.parse(localStorage.getItem("queue"));
+    var nq = [];
+    for (var c in q) {if (c !== pos) {nq.push(q[c]);}}
+    localStorage.setItem("queue", JSON.stringify(nq));
+    var n = parseInt(localStorage.getItem("queuePosition"));
+    if (n == pos) {
+        if (nq[pos - 1]) {
+            setQueuePosition((pos - 1));
+        } else if (nq[pos + 1]) {
+            setQueuePosition((pos + 1));
+        } else {
+            document.getElementById("trackName").innerHTML = "Nothing is playing.";
+            document.getElementById("artistName").innerHTML = "Blazebury Music";
+            document.getElementById("cover").src = "icon.png";
+        }
+    } else if (n > pos) {
+        var nn = (n - 1).toString();
+        localStorage.setItem("queuePosition", nn);
+    } else if (n < pos) {
+        var nn = (n + 1).toString();
+        localStorage.setItem("queuePosition", nn);
+    }
+}
+
+
+function toggleLoop() {
+    // 0 = loop off
+    // 1 = loop queue
+    // 2 = loop single
+    if (!localStorage.getItem("loopMode") || localStorage.getItem("loopMode") == "0") {
+        // go to 1
+        localStorage.setItem("loopMode", "1");
+        document.getElementById("loopBtn").innerHTML = "repeat_on";
+    } else if (localStorage.getItem("loopMode") == "1") {
+        // go to 2
+        localStorage.setItem("loopMode", "2");
+        document.getElementById("loopBtn").innerHTML = "repeat_one_on";
+    } else if (localStorage.getItem("loopMode") == "2") {
+        // go to 0
+        localStorage.setItem("loopMode", "0");
+        document.getElementById("loopBtn").innerHTML = "repeat";
+    }
+}
+
+function setLoop() {
+    if (!localStorage.getItem("loopMode") || localStorage.getItem("loopMode") == "0") {
+        document.getElementById("loopBtn").innerHTML = "repeat";
+    } else if (localStorage.getItem("loopMode") == "1") {
+        document.getElementById("loopBtn").innerHTML = "repeat_on";
+    } else if (localStorage.getItem("loopMode") == "2") {
+        document.getElementById("loopBtn").innerHTML = "repeat_one_on";
     }
 }
 
@@ -867,12 +1055,16 @@ function getLyrics() {
 }
 
 function getArtist() {
+    document.getElementById("artistPage").style.display = "none";
+    document.getElementById("artistLoad").style.display = "";
     var xhr = new XMLHttpRequest();
     var id = window.location.hash.split("#").slice(1)[1]
     xhr.open("GET", "/api/get/artist?id=" + id);
     xhr.send();
     xhr.onload = function () {
         var json = JSON.parse(xhr.responseText);
+        document.getElementById("artistLoad").style.display = "none";
+        document.getElementById("artistPage").style.display = "";
         if (json.source == "deezer") {
             document.getElementById("artistCover").src = json.data.picture_xl;
             document.getElementById("artName").innerHTML = json.data.name;
@@ -880,6 +1072,7 @@ function getArtist() {
             document.getElementById("artFollowerCount").innerHTML = json.data.nb_fan.toLocaleString();
             document.getElementById("artNumCat1").innerHTML = "followers";
             document.getElementById("artNumSrc1").innerHTML = "Deezer";
+            dumpIntoSection("/api/get/artist/albums?id=" + id, "artAlbums");
         } else if (json.source == "lastfm") {
             document.getElementById("artistCover").src = json.data.images[json.data.images.length - 1];
             document.getElementById("artName").innerHTML = json.data.name;
@@ -888,6 +1081,76 @@ function getArtist() {
             document.getElementById("artNumCat1").innerHTML = "listeners";
             document.getElementById("artNumSrc1").innerHTML = "Last.fm";
             document.getElementById("artAlbCountContainer").style.display = "none";
+            dumpIntoSection("/api/get/artist/albums?id=" + id, "artAlbums");
+        }
+    }
+}
+
+function getAlbum() {
+    document.getElementById("albumPage").style.display = "none";
+    document.getElementById("albumLoad").style.display = "";
+    document.getElementById("tracklist").innerHTML = "";
+    var xhr = new XMLHttpRequest();
+    var id = window.location.hash.split("#").slice(1)[1]
+    xhr.open("GET", "/api/get/album?id=" + id);
+    xhr.send();
+    xhr.onload = function () {
+        var json = JSON.parse(xhr.responseText);
+        document.getElementById("albumLoad").style.display = "none";
+        document.getElementById("albumPage").style.display = "";
+        if (json.source == "deezer") {
+            document.getElementById("albumCover").src = json.data.cover_big;
+            document.getElementById("albName").innerHTML = json.data.title;
+            document.getElementById("albArtist").innerHTML = json.data.artist.name;
+            document.getElementById("albArtLink").href = "#artist#" + json.data.artist.id;
+            document.getElementById("albFollowerCount").innerHTML = json.data.fans.toLocaleString();
+            document.getElementById("albNumCat1").innerHTML = "followers";
+            document.getElementById("albNumSrc1").innerHTML = "Deezer";
+            document.getElementById("trackCount").innerHTML = json.data.tracks.data.length.toLocaleString();
+            document.getElementById("tracklist").innerHTML = "";
+            if (!json.data.tracks || !json.data.tracks.data || !json.data.tracks.data[0]) {
+                document.getElementById("tracklist").style.display = "none";
+                document.getElementById("tracklistErr").style.display = "";
+            } else {
+                document.getElementById("tracklist").style.display = "";
+                document.getElementById("tracklistErr").style.display = "none";
+                for (var c in json.data.tracks.data) {
+                    var div = document.createElement("DIV");
+                    div.classList.add("chip");
+                    div.id = json.data.tracks.data[c].id;
+                    div.onclick = function () { getStream(this.id); }
+                    var tn = document.createElement("H2");
+                    tn.innerHTML = json.data.tracks.data[c].title;
+                    div.appendChild(tn);
+                    document.getElementById("tracklist").appendChild(div);
+                }
+            }
+        } else if (json.source == "lastfm") {
+            document.getElementById("albumCover").src = json.data.images[json.data.images.length - 1];
+            document.getElementById("albName").innerHTML = json.data.name;
+            document.getElementById("albArtist").innerHTML = json.data.artistName;
+            document.getElementById("albArtLink").href = "#artist#" + json.data.artistName;
+            document.getElementById("albFollowerCount").innerHTML = json.data.listeners.toLocaleString();
+            document.getElementById("albNumCat1").innerHTML = "listeners";
+            document.getElementById("albNumSrc1").innerHTML = "Last.fm";
+            document.getElementById("trackCount").innerHTML = json.data.tracks.length.toLocaleString();
+            if (!json.data.tracks || !json.data.tracks[0]) {
+                document.getElementById("tracklist").style.display = "none";
+                document.getElementById("tracklistErr").style.display = "";
+            } else {
+                document.getElementById("tracklist").style.display = "";
+                document.getElementById("tracklistErr").style.display = "none";
+                for (var c in json.data.tracks) {
+                    var div = document.createElement("DIV");
+                    div.classList.add("chip");
+                    div.id = json.data.tracks[c].name + ":::" + json.data.tracks[c].artistName; 
+                    div.onclick = function () { getStream(this.id); }
+                    var tn = document.createElement("H2");
+                    tn.innerHTML = json.data.tracks[c].name;
+                    div.appendChild(tn);
+                    document.getElementById("tracklist").appendChild(div);
+                }
+            }
         }
     }
 }

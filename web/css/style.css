@@ -26,14 +26,13 @@ button {
 }
 
 @keyframes entrance {
-  from {
-    transform: translate(0px, 10px);
-    opacity: 0;
-  }
-  to {
-    transform: translate(0px, 0px);
-    opacity: 1;
-  }
+    from {
+        transform: translate(0px, 10px);
+        opacity: 0;
+    } to {
+        transform: translate(0px, 0px);
+        opacity: 1;
+    }
 }
 
 .header {
@@ -85,7 +84,7 @@ button {
     margin-top:4px;
 }
 
-.rightwing a {
+.rightwing a, #buttonBar a {
     cursor:initial;
 }
 
@@ -115,6 +114,11 @@ button {
     margin-right:15px;
 }
 
+.section a {
+    color:white;
+    text-decoration:none;
+}
+
 .player {
     background:black;
     height:200px;
@@ -137,12 +141,12 @@ button {
     width:calc(100% - 240px);
 }
 
-.player a {
+.player a, .infoBox a {
     text-decoration:none;
     color:white;
 }
 
-.player a:hover {
+.player a:hover, .infoBox a:hover {
     text-decoration:underline;
     text-decoration-color:white;
 }
@@ -365,11 +369,28 @@ button {
     text-align:justify;
 }
 
-.infoBox h1, .infoBox p {
+.infoBox h1, .infoBox h2, .infoBox p {
     margin-top:0;
     margin-bottom:5px;
 }
 
 .infoBox .stats h2 {
     margin:0;
+}
+
+#tracklist {
+    margin-top:1%;
+    width:100%;
+}
+
+#tracklist .chip {
+    min-height:65px;
+    height:auto !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    width:100% !important;
+}
+
+#tracklist .chip h2 {
+    margin-left:1% !important;
 }

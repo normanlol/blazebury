@@ -1,3 +1,5 @@
+console.log("Blazebury is starting...");
+console.log("Version 0.1.0");
 const { app, BrowserWindow } = require('electron');
 const http = require("http");
 const url = require("url");
@@ -40,8 +42,8 @@ function bootup() {
         minWidth: 650,
         height: 900,
         webPreferences: {
-            nodeIntegration:true,
-            nativeWindowOpen:true
+            nativeWindowOpen:true,
+            contextIsolation:true
         }
     });
     w.removeMenu();
@@ -172,8 +174,8 @@ async function renderServer(request, res) {
                     res.end(j);
                 }
             } else if (config.dataSource == 2) {
-                if (u.query.id && u.query.id.split(":").length > 1) {
-                    lastfm.trackInfo({artistName: u.query.id.split(":")[1], name: u.query.id.split(":")[0]}, function(err, data) {
+                if (u.query.id && u.query.id.split(":::").length > 1) {
+                    lastfm.trackInfo({artistName: u.query.id.split(":::")[1], name: u.query.id.split(":::")[0]}, function(err, data) {
                         if (data) {
                             var j = JSON.stringify({
                                 data,
@@ -551,20 +553,45 @@ async function renderServer(request, res) {
                 })
                 res.end(j);
             }
-            } else if (path[1] == "get" | path[2] == "artist") {
-                if (u.query.id) {
-                    if (config.dataSource == 1) {
-                        deezer.artist(u.query.id).then(function(data) {
+        } else if (path[1] == "get" && path[2] == "artist" && !path[3]) {
+            if (u.query.id) {
+                if (config.dataSource == 1) {
+                    deezer.artist(u.query.id).then(function(data) {
+                        var j = JSON.stringify({
+                            data,
+                            "source": "deezer"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch(function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    });
+                } else if (config.dataSource == 2) {
+                    lastfm.artistInfo({ name:u.query.id, autocorrect:1 }, function(err, data) {
+                        if (data) {
                             var j = JSON.stringify({
                                 data,
-                                "source": "deezer"
+                                "source": "lastfm"
                             });
                             res.writeHead(200, {
                                 "Access-Control-Allow-Origin": "*",
                                 "Content-Type":"application/json"
                             })
                             res.end(j);
-                        }).catch(function(err) {
+                        } else {
                             var j = JSON.stringify({
                                 "err": {
                                     "code": err.code,
@@ -576,9 +603,117 @@ async function renderServer(request, res) {
                                 "Content-Type":"application/json"
                             })
                             res.end(j);
+                        }
+                    })
+                }
+            } else {
+                var j = JSON.stringify({
+                    "err": {
+                        "code": "reqsNotMet",
+                        "message": "A track name and artist name are required for this endpoint."
+                    }
+                });
+                res.writeHead(500, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type":"application/json"
+                })
+                res.end(j);
+            }
+        } else if (path[1] == "get" && path[2] == "artist" && path[3] == "albums") {
+            if (u.query.id) {
+                if (config.dataSource == 1) {
+                    deezer.artist.albums(u.query.id, 100).then(function(data) {
+                        var j = JSON.stringify({
+                            "data": data,
+                            "source": "deezer"
                         });
-                    } else if (config.dataSource == 2) {
-                        lastfm.artistInfo({ name:u.query.id, autocorrect:1 }, function(err, data) {
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch(function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    });
+                } else if (config.dataSource == 2) {
+                    lastfm.artistTopAlbums({ name:u.query.id, autocorrect:1 }, function(err, data) {
+                        if (data) {
+                            var j = JSON.stringify({
+                                data,
+                                "source": "lastfm"
+                            });
+                            res.writeHead(200, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        } else {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": err.code,
+                                    "message": err.message
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }
+                    })
+                }
+            } else {
+                var j = JSON.stringify({
+                    "err": {
+                        "code": "reqsNotMet",
+                        "message": "A track name and artist name are required for this endpoint."
+                    }
+                });
+                res.writeHead(500, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type":"application/json"
+                })
+                res.end(j);
+            }
+        } else if (path[1] == "get" && path[2] == "album") {
+            if (u.query.id) {
+                if (config.dataSource == 1) {
+                    deezer.album(u.query.id, 100).then(function(data) {
+                        var j = JSON.stringify({
+                            "data": data,
+                            "source": "deezer"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch(function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    });
+                } else if (config.dataSource == 2) {
+                    if (u.query.id && u.query.id.split(":::").length > 1) {
+                        lastfm.albumInfo({ name:u.query.id.split(":::")[0], artistName: u.query.id.split(":::")[1], autocorrect:1 }, function(err, data) {
                             if (data) {
                                 var j = JSON.stringify({
                                     data,
@@ -603,9 +738,34 @@ async function renderServer(request, res) {
                                 res.end(j);
                             }
                         })
+                    } else {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": "reqsNotMet",
+                                "message": "A track name and artist name are required for this endpoint."
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
                     }
-                }    
-        } else if (path[1] == "get" | path[2] == "lyrics") {
+                }
+            } else {
+                var j = JSON.stringify({
+                    "err": {
+                        "code": "reqsNotMet",
+                        "message": "A track name and artist name are required for this endpoint."
+                    }
+                });
+                res.writeHead(500, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type":"application/json"
+                })
+                res.end(j);
+            }
+        } else if (path[1] == "get" && path[2] == "lyrics") {
             if (u.query.artist && u.query.title) {
                 ftl.find(u.query.artist, u.query.title, function(err, resp) {
                     if (!err) {

@@ -1,6 +1,6 @@
 {
   "name": "blazebury",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "music app similar to the likes of spotify, only free with no catches",
   "main": "index.js",
   "scripts": {
@@ -25,11 +25,12 @@
   "dependencies": {
     "deezer-public-api": "^1.0.4",
     "discord-rich-presence": "0.0.8",
-    "electron": "^11.2.2",
-    "findthelyrics": "^1.0.8",
+    "electron": "^11.2.3",
+    "findthelyrics": "^1.0.9",
     "last-fm": "^5.3.0",
     "soundcloud-downloader": "^0.2.4",
     "ytdl-core": "^4.4.5",
     "ytsr": "^3.2.4"
-  }
+  },
+  "devDependencies": {}
 }
