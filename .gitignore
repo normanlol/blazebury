@@ -105,3 +105,6 @@ dist
 
 # Configuration File
 config.json
+
+# Build folders
+blazebury-win32-x64
