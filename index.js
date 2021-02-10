@@ -458,7 +458,7 @@ async function renderServer(request, res) {
                     res.end(j);
                 });
             } else if (config.dataSource == 2) {
-                lastfm.geoTopTracks({country:"us"}, function(err, data) {
+                lastfm.chartTopTracks({limit:"50"}, function(err, data) {
                     if (data) {
                         var j = JSON.stringify({
                             data,

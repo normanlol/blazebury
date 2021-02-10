@@ -83,7 +83,7 @@ document.getElementById("actualPlayer").addEventListener("ended", function () {
             document.getElementById("loading").style.display = "none";
             document.getElementById("loaded").style.display = "";
         } else {
-
+            // if loop is off, do nothing after track ends
         }
     }
 })
@@ -310,7 +310,30 @@ function dumpIntoSection(location, id) {
             document.getElementById(id+"Load").style.display = "none";
             document.getElementById(id).style.display = "";
             for (var c in json.data.result) {
-                if (json.data.result[c].type == "album") {
+                if (json.data.result[c].type == "track") {
+                    var div = document.createElement("DIV");
+                    div.classList.add("sectBlob");
+                    div.id = json.data.result[c].name + ":::" + json.data.result[c].artistName;
+                    div.onclick = function () {getStream(this.id)}
+                    var cover = document.createElement("IMG");
+                    if (json.data.result[c].images) {cover.src = json.data.result[c].images[json.data.result[c].images.length - 1];}
+                    else {cover.src = "icon.png";}
+                    cover.onerror = function () {this.src = "icon.png";}
+                    div.appendChild(cover);
+                    var title = document.createElement("H3");
+                    if (json.data.result[c].name.length <= 40) {
+                        title.innerHTML = json.data.result[c].name;
+                    } else {
+                        title.innerHTML = json.data.result[c].name.substring(0,40).trim()+"...";
+                    }
+                    title.title = json.data.result[c].name;
+                    div.appendChild(title);
+                    var author = document.createElement("H4");
+                    author.innerHTML = json.data.result[c].artistName;
+                    author.title = json.data.result[c].artistName;
+                    div.appendChild(author);
+                    document.getElementById(id).appendChild(div);
+                } else if (json.data.result[c].type == "album") {
                     var lnk = document.createElement("A");
                     lnk.href = "#album#" + json.data.result[c].name + ":::" + json.data.result[c].artistName;
                     var div = document.createElement("DIV");
