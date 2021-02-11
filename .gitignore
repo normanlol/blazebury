@@ -107,4 +107,10 @@ dist
 config.json
 
 # Build folders
-blazebury-win32-x64
+blazebury-win32-x64/
+blazebury-win32-ia32/
+blazebury-mas-x64
+blazebury-darwin-arm64/
+blazebury-linux-armv7l/
+blazebury-linux-x64/
+blazebury-linux-ia32/
