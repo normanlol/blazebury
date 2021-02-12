@@ -7,6 +7,7 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="shortcut icon" type="image/png" href="/icon.png"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body onHashChange="refresh()">
         <div class="header" id="drag-region">
@@ -18,10 +19,10 @@
             </div>-->
             <div class="rightwing">
                 <div id="window-controls" style="display: none">
-                    <button draggable="false" class="material-icons" id="close-button" title="Close Blazebury.">close</button>
-                    <button draggable="false" class="material-icons" id="restore-button" title="Refresh Blazebury.">crop_3_2</button>
-                    <button draggable="false" class="material-icons" id="max-button" title="Maximize Blazebury.">crop_3_2</button>
-                    <button draggable="false" class="material-icons" id="min-button" title="Minimize Blazebury.">minimize</button>
+                  <input type="image" draggable="false" src="assets/window/close.png" id="close-button" alt="Close window"></input>
+                  <input type="image" draggable="false" src="assets/window/restore.png" id="restore-button" alt="Restore window" onclick="winAction('restore')"></input>
+                  <input type="image" draggable="false" src="assets/window/max.png" id="max-button" alt="Maximize window"></input>
+                  <input type="image" draggable="false" src="assets/window/min.png" id="min-button" alt="Minimize window"></input>
                 </div>
 
                 <a href="#settings">

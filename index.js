@@ -53,7 +53,7 @@ function bootup() {
         width: 1100,
         minWidth: 680,
         height: 900,
-        frame: false,
+        frame: true,
         webPreferences: {
             nativeWindowOpen:true,
             contextIsolation:false,

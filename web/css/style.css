@@ -22,7 +22,7 @@ button {
     background:#282828;
     color:white;
     border:0;
-    height:22px;
+    height:25px;
     margin-right:5px;
 }
 
@@ -137,6 +137,14 @@ button {
 
 .rightwing a, #buttonBar a {
     cursor:initial;
+}
+
+#window-controls input[type="image"] {
+  background: #282828;
+  width: 15px;
+  height: 15px;
+  padding: 5px;
+  margin-right: 5px;
 }
 
 #drag-region {

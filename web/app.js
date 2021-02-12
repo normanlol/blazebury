@@ -1,14 +1,17 @@
+let win;
+
 var userAgent = navigator.userAgent.toLowerCase();
 if (userAgent.indexOf(" electron/") > -1) {
     const { ipcRenderer } = require("electron");
     const { ipcMain } = require("electron");
     const remote = require("electron").remote;
-    const win = remote.getCurrentWindow();
+    win = remote.getCurrentWindow();
+    document.getElementById("window-controls").style.display = "";
 
     document.getElementById("max-button").style.display = "";
     document.getElementById("restore-button").style.display = "none";
 
-    document.getElementById("window-controls").style.display = "";
+    win = remote.getCurrentWindow();
 
     document.getElementById('min-button').addEventListener("click", event => {
         win.minimize();
@@ -30,7 +33,6 @@ if (userAgent.indexOf(" electron/") > -1) {
         win.close();
     });
 }
-
 
 
 refresh();
