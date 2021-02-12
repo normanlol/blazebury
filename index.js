@@ -1,5 +1,6 @@
 console.log("Blazebury is starting...");
 console.log("Version 0.1.0");
+require('dotenv').config()
 const { app, BrowserWindow } = require('electron');
 const http = require("http");
 const url = require("url");

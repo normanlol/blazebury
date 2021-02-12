@@ -13,10 +13,10 @@ window.addEventListener("click", function() {
 
 window.addEventListener("contextmenu", function(e) {
     if (
-        e.target.classList.contains("sectBlob") || 
-        e.target.parentElement !== null && e.target.parentElement.classList.contains("sectBlob") || 
+        e.target.classList.contains("sectBlob") ||
+        e.target.parentElement !== null && e.target.parentElement.classList.contains("sectBlob") ||
         e.target.classList.contains("chip") ||
-        e.target.parentElement !== null && e.target.parentElement.classList.contains("chip") 
+        e.target.parentElement !== null && e.target.parentElement.classList.contains("chip")
     ) {
         e.preventDefault();
         if (
@@ -137,9 +137,62 @@ function setPosition({top, left}) {
     toggleMenu("show");
 }
 
+function hideLyrics() {
+    setTimeout(function () {
+        document.getElementById("lyricsLink").href = "javascript:showLyrics();";
+        document.getElementById("lyrics").style.display = "none";
+        let el = document.getElementById('settings');
+        el.classList.remove("blur-on");
+        el = document.getElementById('home');
+        el.classList.remove("blur-on");
+        el = document.getElementById('about');
+        el.classList.remove("blur-on");
+        el = document.getElementById('search');
+        el.classList.remove("blur-on");
+        el = document.getElementById('artist');
+        el.classList.remove("blur-on");
+        el = document.getElementById('album');
+        el.classList.remove("blur-on");
+    }, 10)
+}
+function showLyrics() {
+    setTimeout(function () {
+        document.getElementById("lyricsLink").href = "javascript:hideLyrics();";
+        document.getElementById("lyrics").style.display = "";
+        let el = document.getElementById('settings');
+        el.classList.add("blur-on");
+        el = document.getElementById('home');
+        el.classList.add("blur-on");
+        el = document.getElementById('about');
+        el.classList.add("blur-on");
+        el = document.getElementById('search');
+        el.classList.add("blur-on");
+        el = document.getElementById('artist');
+        el.classList.add("blur-on");
+        el = document.getElementById('album');
+        el.classList.add("blur-on");
+    }, 10)
+}
+
 function refresh() {
     setTimeout(function () {
+        document.getElementById("lyricsLink").href = "#lyrics";
+        let el = document.getElementById('settings');
+        el.classList.remove("blur-on");
+        el = document.getElementById('home');
+        el.classList.remove("blur-on");
+        el = document.getElementById('about');
+        el.classList.remove("blur-on");
+        el = document.getElementById('search');
+        el.classList.remove("blur-on");
+        el = document.getElementById('artist');
+        el.classList.remove("blur-on");
+        el = document.getElementById('album');
+        el.classList.remove("blur-on");
+
         if (window.location.hash) {
+
+
             if (window.location.hash == "#") {
                 document.getElementById("settings").style.display = "none";
                 document.getElementById("about").style.display = "none";
@@ -190,14 +243,23 @@ function refresh() {
                 document.getElementById("album").style.display = "none";
                 queuePage();
             } else if (window.location.hash == "#lyrics") {
-                document.getElementById("queue").style.display = "none";
-                document.getElementById("settings").style.display = "none";
-                document.getElementById("home").style.display = "none";
-                document.getElementById("about").style.display = "none";
-                document.getElementById("search").style.display = "none";
                 document.getElementById("lyrics").style.display = "";
-                document.getElementById("artist").style.display = "none";
-                document.getElementById("album").style.display = "none";
+                document.getElementById("lyricsLink").href = "javascript:hideLyrics();";
+
+                //BLUR CODE
+                let el = document.getElementById('settings');
+                el.classList.add("blur-on");
+                el = document.getElementById('home');
+                el.classList.add("blur-on");
+                el = document.getElementById('about');
+                el.classList.add("blur-on");
+                el = document.getElementById('search');
+                el.classList.add("blur-on");
+                el = document.getElementById('artist');
+                el.classList.add("blur-on");
+                el = document.getElementById('album');
+                el.classList.add("blur-on");
+                //BLUR OVER
             } else if (window.location.hash.split("#").slice(1)[0] == "artist") {
                 document.getElementById("queue").style.display = "none";
                 document.getElementById("settings").style.display = "none";
@@ -456,6 +518,12 @@ function getStream(id) {
 }
 
 function makePlayerVisible() {
+    var elements = document.getElementsByClassName('hoverPage');
+    for (var i in elements) {
+        if (elements.hasOwnProperty(i)) {
+            elements[i].setAttribute("player", "shown");
+        }
+    }
     if (document.getElementById("player").visible == "1") {return;}
     else {
         document.getElementById("player").style = "margin-bottom:0;";
@@ -466,6 +534,12 @@ function makePlayerVisible() {
 }
 
 function hidePlayer() {
+    var elements = document.getElementsByClassName('hoverPage');
+    for (var i in elements) {
+        if (elements.hasOwnProperty(i)) {
+            elements[i].setAttribute("player", "hidden");
+        }
+    }
     if (document.getElementById("player").visible == "0") {return;}
     else {
         document.getElementById("player").style = "margin-bottom:-200px;";
@@ -1163,7 +1237,7 @@ function getAlbum() {
                 for (var c in json.data.tracks) {
                     var div = document.createElement("DIV");
                     div.classList.add("chip");
-                    div.id = json.data.tracks[c].name + ":::" + json.data.tracks[c].artistName; 
+                    div.id = json.data.tracks[c].name + ":::" + json.data.tracks[c].artistName;
                     div.onclick = function () { getStream(this.id); }
                     var tn = document.createElement("H2");
                     tn.innerHTML = json.data.tracks[c].name;

@@ -99,7 +99,7 @@
                 <button style="margin-left:0.75%;margin-bottom:0.75%;background:black !important;" onclick="clearQueue();">Clear Queue</button>
                 <div id="queueListing"></div>
             </div>
-            <div id="lyrics" class="page">
+            <div id="lyrics" class="hoverPage">
                 <h1 class="pageTitle">Lyrics</h1>
                 <p id="lyricsPage">Loading...</p>
             </div>
@@ -155,7 +155,7 @@
         </div>
         <div class="player" id="player" visible="0" style="margin-bottom:-200px;">
             <img id="cover" src="icon.png">
-            <div id="metadata">  
+            <div id="metadata">
                 <a id="trackLink"><h2 id="trackName">Nothing is playing.</h2></a>
                 <a id="artistLink"><h3 id="artistName">Blazebury Music</h3></a>
                 <div id="loaded">
@@ -164,7 +164,7 @@
                         <button id="previousBtn" title="Go to the previous track." onclick="goToPrev();" class="material-icons">skip_previous</button>
                         <button title="Toggle playback." id="togglePlayback" onclick="togglePlayback();" class="material-icons">play_arrow</button>
                         <a title="View queue." id="queueLink" href="#queue"><button class="material-icons">queue_music</button></a>
-                        <a href="#lyrics"><button id="lyrics" title="Get the lyrics to this song." class="material-icons">audiotrack</button></a>
+                        <a href="#lyrics" id="lyricsLink"><button id="lyrics" title="Get the lyrics to this song." class="material-icons">audiotrack</button></a>
                         <button id="loopBtn" title="Loop queue/currently playing song." class="material-icons" onclick="toggleLoop();">repeat</button>
                         <button id="nextBtn" title="Go to the next track." onclick="goToNext();" class="material-icons">skip_next</button>
                     </div>
