@@ -417,6 +417,8 @@ function dumpIntoSection(location, id) {
                     document.getElementById(id).appendChild(lnk);
                 }
             }
+        } else if (json.source == "youtube") {
+            // not finished yet!!!
         }
     }
 }
@@ -499,6 +501,49 @@ function getStream(id) {
                 localStorage.setItem("queue", JSON.stringify(q));
             }
             xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artistName) + "&track=" + encodeURIComponent(json.data.name));
+            xhr.send();
+            xhr.onload = function() {
+                document.getElementById("progress").innerHTML = "Loading stream data...";
+                var json = JSON.parse(xhr.responseText);
+                document.getElementById("actualPlayer").src = json[0].url;
+                if (localStorage.getItem("queue")) {
+                    var q = JSON.parse(localStorage.getItem("queue"));
+                    q[q.length - 1].url = json[0].url;
+                    localStorage.setItem("queue", JSON.stringify(q));
+                }
+                document.getElementById("loaded").style.display = "";
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("actualPlayer").play();
+            }
+        } else if (json.source == "youtube") {
+            if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url;} else {var cover = "icon.png"}
+            document.getElementById("cover").src = cover;
+            document.getElementById("artistLink").href = "#artist#" + json.data.videoDetails.externalChannelId;
+            document.getElementById("artistName").innerHTML = json.data.videoDetails.ownerChannelName;
+            document.getElementById("trackLink").href = "#track#" + json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId;
+            document.getElementById("trackName").innerHTML = json.data.videoDetails.title;
+            document.getElementById("progress").innerHTML = "Getting stream URL...";
+            if (localStorage.getItem("queue")) {
+                var q = JSON.parse(localStorage.getItem("queue"));
+                var m = [
+                    {
+                        "cover":cover,
+                        "artist": {
+                            "link": "#artist#" + json.data.videoDetails.externalChannelId,
+                            "name": json.data.videoDetails.ownerChannelName,
+                        },
+                        "track": {
+                            "name": json.data.videoDetails.title,
+                            "link": "#track#" + json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId,
+                            "id": json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId
+                        }
+                    }
+                ]
+                q.push(m);
+                localStorage.setItem("queuePosition", q.length - 1);
+                localStorage.setItem("queue", JSON.stringify(q));
+            }
+            xhr.open("GET", "/api/get/track/stream?track=" + encodeURIComponent(json.data.videoDetails.videoId));
             xhr.send();
             xhr.onload = function() {
                 document.getElementById("progress").innerHTML = "Loading stream data...";
@@ -658,6 +703,41 @@ function search() {
                     type.innerHTML = type.innerHTML + " Track";
                     div.appendChild(type);
                     document.getElementById("results").appendChild(div);
+                }
+            } else if (json.source == "youtube") {
+                for (var c in json.results.items) {
+                    if (json.results.items[c].type == "video") {
+                        var div = document.createElement("DIV");
+                        div.classList.add("sectBlob");
+                        div.id = json.results.items[c].id;
+                        div.onclick = function () {getStream(this.id)}
+                        var cover = document.createElement("IMG");
+                        cover.src = json.results.items[c].bestThumbnail.url;
+                        cover.onerror = function () {this.src = "icon.png";}
+                        cover.title = "Cover of " + json.results.items[c].title + " by " + json.results.items[c].author.name;
+                        cover.alt = "Cover of " + json.results.items[c].title + " by " + json.results.items[c].author.name;
+                        div.appendChild(cover);
+                        var title = document.createElement("H3");
+                        if(json.results.items[c].title.length <= 30) {
+                          title.innerHTML = json.results.items[c].title;
+                        }else{
+                          title.innerHTML = json.results.items[c].title.substring(0,30).trim()+"...";
+                        }
+                        title.title = json.results.items[c].title
+                        div.appendChild(title);
+                        var author = document.createElement("H4");
+                        author.innerHTML = json.results.items[c].author.name;
+                        author.title = json.results.items[c].author.name;
+                        div.appendChild(author);
+                        var type = document.createElement("H3");
+                        var typeIcon = document.createElement("SPAN");
+                        typeIcon.classList.add("material-icons");
+                        typeIcon.innerHTML = "audiotrack";
+                        type.appendChild(typeIcon);
+                        type.innerHTML = type.innerHTML + " Track";
+                        div.appendChild(type);
+                        document.getElementById("results").appendChild(div);
+                    }
                 }
             }
         }
@@ -820,6 +900,73 @@ function addToQueue(id) {
                         localStorage.setItem("queue", q);
                     }
                 }
+            } else if (json.source == "youtube") {
+                // not finished yet
+                if (!document.getElementById("player").getAttribute("playing-id")) {
+                    if (json.data.images) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails - 1].url;} else {var cover = "icon.png"}
+                    document.getElementById("cover").src = cover;
+                    document.getElementById("artistLink").href = "#artist#" + json.data.videoDetails.externalChannelId;
+                    document.getElementById("artistName").innerHTML = json.data.videoDetails.ownerChannelName;
+                    document.getElementById("trackLink").href = "#track#" + json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId;
+                    document.getElementById("trackName").innerHTML = json.data.videoDetails.title;
+                    var j = [
+                        {
+                            "cover":cover,
+                            "artist": {
+                                "link": "#artist#" + json.data.videoDetails.externalChannelId,
+                                "name": json.data.videoDetails.ownerChannelName,
+                            },
+                            "track": {
+                                "name": json.data.videoDetails.title,
+                                "link": "#track#" + json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId,
+                                "id": json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId
+                            }
+                        }
+                    ]
+                    localStorage.setItem("queue", JSON.stringify(j));
+                    document.getElementById("progress").innerHTML = "Getting stream URL...";
+                    xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artistName) + "&track=" + encodeURIComponent(json.data.name));
+                    xhr.send();
+                    xhr.onload = function() {
+                        document.getElementById("progress").innerHTML = "Loading stream data...";
+                        var json = JSON.parse(xhr.responseText);
+                        document.getElementById("actualPlayer").src = json[0].url;
+                        j[0].url = json[0].url;
+                        localStorage.setItem("queue", JSON.stringify(j));
+                        document.getElementById("loaded").style.display = "";
+                        document.getElementById("loading").style.display = "none";
+                        document.getElementById("actualPlayer").play();
+                    }
+                } else {
+                    var q = JSON.parse(localStorage.getItem("queue"));
+                    var j = [
+                        {
+                            "cover":cover,
+                            "artist": {
+                                "link": "#artist#" + json.data.videoDetails.externalChannelId,
+                                "name": json.data.videoDetails.ownerChannelName,
+                            },
+                            "track": {
+                                "name": json.data.videoDetails.title,
+                                "link": "#track#" + json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId,
+                                "id": json.data.videoDetails.videoId + "_" + json.data.videoDetails.externalChannelId
+                            }
+                        }
+                    ]
+                    q.push(n);
+                    var q = JSON.stringify(q);
+                    localStorage.setItem("queue", q);
+                    xhr.open("GET", "/api/get/track/stream?track=" + encodeURIComponent(json.data.videoDetails.videoId));
+                    xhr.send();
+                    xhr.onload = function() {
+                        var json2 = JSON.parse(xhr.responseText);
+                        var q = JSON.parse(q);
+                        q[q.length - 1].url = json2[0].url;
+                        var q = JSON.stringify(q);
+                        localStorage.setItem("queue", q);
+                    }
+                }
+                // HAHAHAH
             }
         }
     } else {
@@ -851,7 +998,7 @@ function addToQueue(id) {
                     q[q.length - 1].url = j2[0].url;
                     localStorage.setItem("queue", JSON.stringify(q));
                 }
-            } else {
+            } else if (json.source == "lastfm") {
                 var q = JSON.parse(localStorage.getItem("queue"));
                 var ni = {
                     "cover":json.data.images[json.data.images.length - 1],
@@ -868,6 +1015,29 @@ function addToQueue(id) {
                 q.push(ni);
                 localStorage.setItem("queue", JSON.stringify(q));
                 xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artistName) + "&track=" + encodeURIComponent(json.data.name));
+                xhr.send();
+                xhr.onload = function() {
+                    var j2 = JSON.parse(xhr.responseText);
+                    q[q.length - 1].url = j2[0].url;
+                    localStorage.setItem("queue", JSON.stringify(q));
+                }
+            } else if (json.source == "youtube") {
+                var q = JSON.parse(localStorage.getItem("queue"));
+                var ni = {
+                    "cover":json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails-1].url,
+                    "artist": {
+                        "link": "#artist#" + json.data.artist.id,
+                        "name": json.data.artist.name,
+                    },
+                    "track": {
+                        "name": json.data.title,
+                        "link": "#album#" + json.data.album.id + "#track#" + json.data.id,
+                        "id": json.data.id
+                    }
+                }
+                q.push(ni);
+                localStorage.setItem("queue", JSON.stringify(q));
+                xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artist.name) + "&track=" + encodeURIComponent(json.data.title));
                 xhr.send();
                 xhr.onload = function() {
                     var j2 = JSON.parse(xhr.responseText);
@@ -1176,6 +1346,8 @@ function getArtist() {
             document.getElementById("artNumSrc1").innerHTML = "Last.fm";
             document.getElementById("artAlbCountContainer").style.display = "none";
             dumpIntoSection("/api/get/artist/albums?id=" + id, "artAlbums");
+        } else if (json.source == "youtube") {
+            // nothing coded yet
         }
     }
 }
@@ -1245,6 +1417,8 @@ function getAlbum() {
                     document.getElementById("tracklist").appendChild(div);
                 }
             }
+        } else if (json.source == "youtube") {
+            // nothing coded yet
         }
     }
 }
