@@ -53,15 +53,18 @@ function bootup() {
         width: 1100,
         minWidth: 650,
         height: 900,
+        frame: false,
         webPreferences: {
             nativeWindowOpen:true,
-            contextIsolation:true
+            contextIsolation:false,
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
-    w.removeMenu();
     w.loadURL("http://localhost:808");
     http.createServer(renderServer).listen(808);
 }
+
 
 async function renderServer(request, res) {
     var u = url.parse(request.url, true);

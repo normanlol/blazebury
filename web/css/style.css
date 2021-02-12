@@ -41,11 +41,9 @@ button {
     top: 0px;
     z-index: 999;
     background:black;
+    padding:10px;
     height:25px;
     width:100%;
-    padding-top:10px;
-    padding-left:10px;
-    padding-bottom:10px;
 }
 
 .header * {
@@ -67,13 +65,27 @@ button {
 }
 
 .leftwing, .rightwing {
-    width:49.5%;
     height:100%;
+    width:45.9%;
+}
+
+#logo {
+    -webkit-app-region: no-drag;
+}
+
+.leftwing {
     float:left;
 }
 
+.leftwing input {
+    -webkit-app-region: no-drag;
+    width: 160px;
+}
+
 .rightwing {
+    float: right;
     text-align:right;
+    padding-right: 20px;
 }
 
 .rightwing * {
@@ -81,11 +93,18 @@ button {
 }
 
 .rightwing button {
+    cursor: pointer;
+    -webkit-app-region: no-drag;
     margin-top:4px;
 }
 
 .rightwing a, #buttonBar a {
     cursor:initial;
+}
+
+#drag-region {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
 }
 
 .blur-on {

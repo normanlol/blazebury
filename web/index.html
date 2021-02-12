@@ -9,26 +9,38 @@
         <link rel="shortcut icon" type="image/png" href="/icon.png"/>
     </head>
     <body onHashChange="refresh()">
-        <div class="header">
+        <div class="header" id="drag-region">
             <div class="leftwing">
-                <a href="#"><h2>blazebury</h2></a>
-                <input id="q" placeholder="Search" autocomplete="off" oninput="search();" onfocus="if (!window.location.hash.includes('#search')) {window.open('#search','_self');}">
+              <a href="#"><h2 id="logo">blazebury</h2></a><input id="q" placeholder="Search" autocomplete="off" oninput="search();" onfocus="if (!window.location.hash.includes('#search')) {window.location.href = '#search';}" draggable="false">
             </div>
+            <!--<div class="remainingWing">
+                <div id="drag-region"></div>
+            </div>-->
+
+
             <div class="rightwing">
+
+                <div id="window-controls" style="display: none">
+                  <button onClick="refresh();" draggable="false" id="close-button">Close</button>
+                  <button onClick="refresh();" draggable="false" id="restore-button">Restore</button>
+                  <button onClick="refresh();" draggable="false" id="max-button">Max</button>
+                  <button onClick="refresh();" draggable="false" id="min-button">Min</button>
+                </div>
+
                 <a href="#settings">
-                    <button onClick="refresh();">Settings</button>
+                    <button onClick="refresh();" draggable="false">Settings</button>
                 </a>
                 <a href="#about">
-                    <button onClick="refresh();">About</button>
+                    <button onClick="refresh(); draggable="false"">About</button>
                 </a>
                 <div>
-                    <button id="showPlayer" onclick="makePlayerVisible();">Show Player</button>
+                    <button id="showPlayer" onclick="makePlayerVisible();" draggable="false">Show Player</button>
                 </div>
                 <div>
-                    <button id="hidePlayer" style="display:none;" onclick="hidePlayer();">Hide Player</button>
+                    <button id="hidePlayer" style="display:none;" onclick="hidePlayer();" draggable="false">Hide Player</button>
                 </div>
                 <a href="#">
-                    <button onClick="refresh();">Home</button>
+                    <button onClick="refresh();" draggable="false">Home</button>
                 </a>
             </div>
         </div>

@@ -1,3 +1,35 @@
+var userAgent = navigator.userAgent.toLowerCase();
+if (userAgent.indexOf(' electron/') > -1) {
+  // In the Renderer process
+  const { ipcRenderer } = require('electron')
+  // In the Main process
+  const { ipcMain } = require('electron')
+
+  const remote = require('electron').remote;
+
+  const win = remote.getCurrentWindow();
+
+  document.getElementById("window-controls").style.display = "";
+
+  document.getElementById('min-button').addEventListener("click", event => {
+      win.minimize();
+  });
+
+  document.getElementById('max-button').addEventListener("click", event => {
+      win.maximize();
+  });
+
+  document.getElementById('restore-button').addEventListener("click", event => {
+      win.unmaximize();
+  });
+
+  document.getElementById('close-button').addEventListener("click", event => {
+      win.close();
+  });
+}
+
+
+
 refresh();
 checkQueue();
 setLoop();
