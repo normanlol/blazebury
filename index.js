@@ -65,7 +65,6 @@ function bootup() {
 
 async function renderServer(request, res) {
     var u = url.parse(request.url, true);
-    console.log(request.url)
     var path = u.pathname;
     if (path.substr(0,4) == "/api") {
         var path = path.split("/").slice(1);
