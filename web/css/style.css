@@ -110,6 +110,7 @@ button {
 }
 
 .hoverPage {
+    z-index: 2000;
     display: block;
     position: fixed;
     background:#282828;

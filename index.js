@@ -29,6 +29,7 @@ const DeezerPublicApi = require('deezer-public-api');
 const deezer = new DeezerPublicApi();
 const ytsr = require("ytsr");
 const ytdl = require("ytdl-core");
+const ytpl = require('ytpl');
 const ytch = require('yt-channel-info')
 const drpc = require("discord-rich-presence")(config.discordRpcId);
 const ftl = require("findthelyrics");
@@ -57,7 +58,7 @@ function bootup() {
             contextIsolation:true
         }
     });
-    //w.removeMenu();
+    w.removeMenu();
     w.loadURL("http://localhost:808");
     http.createServer(renderServer).listen(808);
 }
