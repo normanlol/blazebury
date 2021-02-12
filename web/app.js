@@ -422,7 +422,6 @@ function dumpIntoSection(location, id) {
             document.getElementById(id).style.display = "";
             if (json.data.id) {
                 for (var c in json.data.items) {
-
                     // var lnk = document.createElement("A");
                     // lnk.href = "#track#" + json.data.items[c].id
                     var div = document.createElement("DIV");
@@ -1409,10 +1408,10 @@ function getArtist() {
             // nothing coded yet
             document.getElementById("artistCover").src = json.data.info.authorThumbnails[json.data.info.authorThumbnails.length-1].url;
             document.getElementById("artName").innerHTML = json.data.info.author;
-            document.getElementById("albumCount").innerHTML = json.data.playlists.items.length;
+            document.getElementById("albumCount").innerHTML = json.data.playlists.items.length.toLocaleString();
             document.getElementById("albumUnit").innerHTML = "playlists";
             document.getElementById("albumSectionUnit").innerHTML = "Playlists";
-            document.getElementById("artFollowerCount").innerHTML = json.data.info.subscriberCount;
+            document.getElementById("artFollowerCount").innerHTML = json.data.info.subscriberCount.toLocaleString();
             document.getElementById("artNumCat1").innerHTML = "subscribers";
             document.getElementById("artNumSrc1").innerHTML = "YouTube";
             //document.getElementById("albumsContainer").style.display = "none"
