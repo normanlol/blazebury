@@ -758,19 +758,36 @@ async function renderServer(request, res) {
                     })
                 } else if (config.dataSource == 3) {
                     ytch.getChannelInfo(u.query.id).then((channelinfo) => {
-                        let sortBy = 'popular'
-                        if (u.query.sort!=undefined) {
-                          sortBy = u.query.sort
-                        }
-                        var j = JSON.stringify({
-                            "data": {"info": channelinfo},
-                            "source": "youtube"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
+
+                        ytch.getChannelPlaylistInfo("UCIOqgcoAGI2fycb89gPXMPA", 'popular').then((response) => {
+                            let sortBy = 'popular'
+                            if (u.query.sort!=undefined) {
+                              sortBy = u.query.sort
+                            }
+                            var j = JSON.stringify({
+                                "data": {"info": channelinfo, "playlists": response},
+                                "source": "youtube"
+                            });
+                            res.writeHead(200, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }).catch((err) => {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": err.code,
+                                    "message": err.message
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
                         })
-                        res.end(j);
+
+
 
                     }).catch((err) => {
                         var j = JSON.stringify({
@@ -852,23 +869,36 @@ async function renderServer(request, res) {
                         }
                     })
                 } else if (config.dataSource == 3) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": "ytArtistAlbums",
-                            "message": "the YouTube data source doesn't have an artist albums endpoint yet!"
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
+                    ytch.getChannelPlaylistInfo("UCIOqgcoAGI2fycb89gPXMPA", 'popular').then((response) => {
+                        var j = JSON.stringify({
+                            "data": response,
+                            "source": "youtube"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch((err) => {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
                     })
-                    res.end(j);
+
                 }
             } else {
                 var j = JSON.stringify({
                     "err": {
                         "code": "reqsNotMet",
-                        "message": "A track name and artist name are required for this endpoint."
+                        "message": "An arist name id is required for this endpoint."
                     }
                 });
                 res.writeHead(500, {

@@ -418,7 +418,32 @@ function dumpIntoSection(location, id) {
                 }
             }
         } else if (json.source == "youtube") {
-            // not finished yet!!!
+            document.getElementById(id+"Load").style.display = "none";
+            document.getElementById(id).style.display = "";
+            for (var c in json.data.items) {
+                var div = document.createElement("DIV");
+                div.classList.add("sectBlob");
+                div.id = json.data.items[c].playlistId;
+                div.onclick = function () {getStream(this.id)}
+                var cover = document.createElement("IMG");
+                if (json.data.items[c].playlistThumbnail) {cover.src = json.data.items[c].playlistThumbnail;}
+                else {cover.src = "icon.png";}
+                cover.onerror = function () {this.src = "icon.png";}
+                div.appendChild(cover);
+                var title = document.createElement("H3");
+                if (json.data.items[c].title.length <= 40) {
+                    title.innerHTML = json.data.items[c].title;
+                } else {
+                    title.innerHTML = json.data.items[c].title.substring(0,40).trim()+"...";
+                }
+                title.title = json.data.items[c].title;
+                div.appendChild(title);
+                var author = document.createElement("H4");
+                author.innerHTML = json.data.items[c].author;
+                author.title = json.data.items[c].author;
+                div.appendChild(author);
+                document.getElementById(id).appendChild(div);
+            }
         }
     }
 }
@@ -1350,12 +1375,14 @@ function getArtist() {
             // nothing coded yet
             document.getElementById("artistCover").src = json.data.info.authorThumbnails[json.data.info.authorThumbnails.length-1].url;
             document.getElementById("artName").innerHTML = json.data.info.author;
-            document.getElementById("artAlbCountContainer").innerHTML = `<span class="material-icons">album</span> <span id="albumCount">Not available for YouTube data source</span>`;
+            document.getElementById("albumCount").innerHTML = json.data.playlists.items.length;
+            document.getElementById("albumUnit").innerHTML = "playlists";
+            document.getElementById("albumSectionUnit").innerHTML = "Playlists";
             document.getElementById("artFollowerCount").innerHTML = json.data.info.subscriberCount;
             document.getElementById("artNumCat1").innerHTML = "subscribers";
             document.getElementById("artNumSrc1").innerHTML = "YouTube";
-            document.getElementById("albumsContainer").style.display = "none"
-            //dumpIntoSection("/api/get/artist/albums?id=" + id, "artAlbums");
+            //document.getElementById("albumsContainer").style.display = "none"
+            dumpIntoSection("/api/get/artist/albums?id=" + json.data.info.authorId, "artAlbums");
         }
     }
 }
