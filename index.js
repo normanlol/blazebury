@@ -623,17 +623,29 @@ async function renderServer(request, res) {
                     }
                 })
             } else if (config.dataSource == 3) {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "ytTrending",
-                        "message": "the YouTube data source doesn't have a trending endpoint yet!"
-                    }
-                });
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
+                ytpl('RDCLAK5uy_k5n4srrEB1wgvIjPNTXS9G1ufE9WQxhnA').then((response) => {
+                    var j = JSON.stringify({
+                        "data": response,
+                        "source": "youtube"
+                    });
+                    res.writeHead(200, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
+                }).catch((err) => {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": err.code,
+                            "message": err.message
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
                 })
-                res.end(j);
             }
         } else if (path[1] == "config") {
             var t = fs.readFileSync("config.json").toString();
