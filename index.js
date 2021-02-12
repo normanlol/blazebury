@@ -14,7 +14,15 @@ if (!fs.existsSync("config.json")) {
     }));
 }
 const config = JSON.parse(fs.readFileSync("config.json"));
-if (config.lastFmKey == "") {var lfmKey = "--only-replace-if-you-have-a-key--";} else {var lfmKey = config.lastFmKey;}
+if (config.lastFmKey == "") {
+  if (process.env.lastFmKey != undefined) {
+    var lfmKey = process.env.lastFmKey;
+  }else {
+    var lfmKey = "--only-replace-if-you-have-a-key--"
+  }
+}else {
+  var lfmKey = config.lastFmKey;
+}
 const LastFM = require('last-fm');
 const lastfm = new LastFM(lfmKey, { userAgent: "BlazeburyMusic/0.1.0", minArtistListeners: 50, minTrackListeners: 100 });
 const DeezerPublicApi = require('deezer-public-api');
