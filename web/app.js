@@ -421,6 +421,8 @@ function dumpIntoSection(location, id) {
             document.getElementById(id+"Load").style.display = "none";
             document.getElementById(id).style.display = "";
             for (var c in json.data.items) {
+                var lnk = document.createElement("A");
+                lnk.href = "#album#" + json.data.items[c].playlistId
                 var div = document.createElement("DIV");
                 div.classList.add("sectBlob");
                 div.id = json.data.items[c].playlistId;
@@ -442,7 +444,8 @@ function dumpIntoSection(location, id) {
                 author.innerHTML = json.data.items[c].author;
                 author.title = json.data.items[c].author;
                 div.appendChild(author);
-                document.getElementById(id).appendChild(div);
+                lnk.append(div);
+                document.getElementById(id).appendChild(lnk);
             }
         }
     }
@@ -1453,7 +1456,32 @@ function getAlbum() {
                 }
             }
         } else if (json.source == "youtube") {
-            // nothing coded yet
+            // document.getElementById("albumCover").src = json.data.cover_big;
+            // document.getElementById("albName").innerHTML = json.data.title;
+            // document.getElementById("albArtist").innerHTML = json.data.artist.name;
+            // document.getElementById("albArtLink").href = "#artist#" + json.data.artist.id;
+            // document.getElementById("albFollowerCount").innerHTML = json.data.fans.toLocaleString();
+            // document.getElementById("albNumCat1").innerHTML = "followers";
+            // document.getElementById("albNumSrc1").innerHTML = "Deezer";
+            // document.getElementById("trackCount").innerHTML = json.data.tracks.data.length.toLocaleString();
+            // document.getElementById("tracklist").innerHTML = "";
+            // if (!json.data.tracks || !json.data.tracks.data || !json.data.tracks.data[0]) {
+            //     document.getElementById("tracklist").style.display = "none";
+            //     document.getElementById("tracklistErr").style.display = "";
+            // } else {
+            //     document.getElementById("tracklist").style.display = "";
+            //     document.getElementById("tracklistErr").style.display = "none";
+            //     for (var c in json.data.tracks.data) {
+            //         var div = document.createElement("DIV");
+            //         div.classList.add("chip");
+            //         div.id = json.data.tracks.data[c].id;
+            //         div.onclick = function () { getStream(this.id); }
+            //         var tn = document.createElement("H2");
+            //         tn.innerHTML = json.data.tracks.data[c].title;
+            //         div.appendChild(tn);
+            //         document.getElementById("tracklist").appendChild(div);
+            //     }
+            // }
         }
     }
 }

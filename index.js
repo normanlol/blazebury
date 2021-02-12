@@ -57,8 +57,8 @@ function bootup() {
             contextIsolation:true
         }
     });
-    w.removeMenu();
-    w.loadURL("http://localhost:808");    
+    //w.removeMenu();
+    w.loadURL("http://localhost:808");
     http.createServer(renderServer).listen(808);
 }
 
@@ -759,7 +759,7 @@ async function renderServer(request, res) {
                 } else if (config.dataSource == 3) {
                     ytch.getChannelInfo(u.query.id).then((channelinfo) => {
 
-                        ytch.getChannelPlaylistInfo("UCIOqgcoAGI2fycb89gPXMPA", 'popular').then((response) => {
+                        ytch.getChannelPlaylistInfo(u.query.id, 'popular').then((response) => {
                             let sortBy = 'popular'
                             if (u.query.sort!=undefined) {
                               sortBy = u.query.sort
@@ -869,7 +869,7 @@ async function renderServer(request, res) {
                         }
                     })
                 } else if (config.dataSource == 3) {
-                    ytch.getChannelPlaylistInfo("UCIOqgcoAGI2fycb89gPXMPA", 'popular').then((response) => {
+                    ytch.getChannelPlaylistInfo(u.query.id, 'popular').then((response) => {
                         var j = JSON.stringify({
                             "data": response,
                             "source": "youtube"
@@ -974,17 +974,29 @@ async function renderServer(request, res) {
                         res.end(j);
                     }
                 } else if (config.dataSource == 3) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": "ytAlbums",
-                            "message": "the YouTube data source doesn't have an albums endpoint yet!"
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
+                    ytpl(u.query.id).then((response) => {
+                        var j = JSON.stringify({
+                            "data": response,
+                            "source": "youtube"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch((err) => {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
                     })
-                    res.end(j);
                 }
             } else {
                 var j = JSON.stringify({
