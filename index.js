@@ -762,29 +762,16 @@ async function renderServer(request, res) {
                         if (u.query.sort!=undefined) {
                           sortBy = u.query.sort
                         }
-                        ytch.getChannelVideos(u.query.id, sortBy).then((channelvideos) => {
-                            var j = JSON.stringify({
-                                "data": {"info": channelinfo, "videos": channelinfo},
-                                "source": "youtube"
-                            });
-                            res.writeHead(200, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        }).catch((err) => {
-                            var j = JSON.stringify({
-                                "err": {
-                                    "code": err.code,
-                                    "message": err.message
-                                }
-                            });
-                            res.writeHead(500, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
+                        var j = JSON.stringify({
+                            "data": {"info": channelinfo},
+                            "source": "youtube"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
                         })
+                        res.end(j);
+
                     }).catch((err) => {
                         var j = JSON.stringify({
                             "err": {
