@@ -759,7 +759,7 @@ async function renderServer(request, res) {
                     ytch.getChannelInfo(u.query.id).then((response) => {
                         var j = JSON.stringify({
                             response,
-                            "source": "lastfm"
+                            "source": "youtube"
                         });
                         res.writeHead(200, {
                             "Access-Control-Allow-Origin": "*",

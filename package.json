@@ -24,12 +24,12 @@
   "dependencies": {
     "deezer-public-api": "^1.0.4",
     "discord-rich-presence": "0.0.8",
-    "findthelyrics": "^1.0.9",
     "dotenv": "^8.2.0",
     "electron": "^11.2.2",
     "findthelyrics": "^1.0.8",
     "last-fm": "^5.3.0",
     "soundcloud-downloader": "^0.2.4",
+    "yt-channel-info": "^1.2.0",
     "ytdl-core": "^4.4.5",
     "ytsr": "^3.2.4"
   },
