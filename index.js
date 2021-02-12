@@ -757,16 +757,34 @@ async function renderServer(request, res) {
                         }
                     })
                 } else if (config.dataSource == 3) {
-                    ytch.getChannelInfo(u.query.id).then((response) => {
-                        var j = JSON.stringify({
-                            response,
-                            "source": "youtube"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
+                    ytch.getChannelInfo(u.query.id).then((channelinfo) => {
+                        let sortBy = 'popular'
+                        if (u.query.sort!=undefined) {
+                          sortBy = u.query.sort
+                        }
+                        ytch.getChannelVideos(u.query.id, sortBy).then((channelvideos) => {
+                            var j = JSON.stringify({
+                                "data": {"info": channelinfo, "videos": channelinfo},
+                                "source": "youtube"
+                            });
+                            res.writeHead(200, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }).catch((err) => {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": err.code,
+                                    "message": err.message
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
                         })
-                        res.end(j);
                     }).catch((err) => {
                         var j = JSON.stringify({
                             "err": {
