@@ -684,7 +684,9 @@ function saveSettings() {
 }
 
 function search() {
+    var oq = document.getElementById("q").value;
     setTimeout(function() {
+        if (oq !== document.getElementById("q").value) {return;}
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/api/search?q=" + document.getElementById("q").value);
         xhr.send();
@@ -799,7 +801,7 @@ function search() {
                 }
             }
         }
-    }, 10)
+    }, 500)
 }
 
 function addToQueue(id) {
