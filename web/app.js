@@ -39,7 +39,7 @@ if (checkPresence() == "true") {
 document.getElementById("loaded").style.display = "none";
 document.getElementById("progress").innerHTML = "No song is loaded.";
 
-window.addEventListener("click", function() {
+window.addEventListener("click", function(e) {
     if (menuVisible == true) {toggleMenu("hide");}
 });
 
@@ -57,7 +57,7 @@ window.addEventListener("contextmenu", function(e) {
         ) { var sId = e.target.parentElement.id;}
         else { var sId = e.target.id; }
         console.log(e.target)
-        document.querySelector(".menu").setAttribute("id", sId + "_context");
+        document.querySelector(".menu").setAttribute("id", sId + "::::context");
         var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
         const origin = {
             left: e.pageX,
@@ -454,7 +454,6 @@ function dumpIntoSection(location, id) {
             document.getElementById(id).style.display = "";
             if (json.data.id) {
                 for (var c in json.data.items) {
-
                     // var lnk = document.createElement("A");
                     // lnk.href = "#track#" + json.data.items[c].id
                     var div = document.createElement("DIV");
@@ -717,14 +716,16 @@ function saveSettings() {
 }
 
 function search() {
+    var oq = document.getElementById("q").value;
     setTimeout(function() {
+        if (oq !== document.getElementById("q").value) {return;}
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/api/search?q=" + document.getElementById("q").value);
         xhr.send();
         xhr.onload = function () {
             var json = JSON.parse(xhr.responseText);
             document.getElementById("results").innerHTML = "";
-            if (!json.results && json.err) {document.getElementById("results").innerHTML = "Error retreiving results. <i>" + json.err.message + "</i>"; return;}
+            if (!json.results && json.err) {document.getElementById("results").innerHTML = "<span style='margin-left:1.5%;'>Error retreiving results. <i>" + json.err.message + "</i></span>"; return;}
             if (json.source == "deezer") {
                 for (var c in json.results.data) {
                     if (json.results.data[c].type == "track") {
@@ -832,11 +833,11 @@ function search() {
                 }
             }
         }
-    }, 10)
+    }, 500)
 }
 
 function addToQueue(id) {
-    var id = id.split("_")[0];
+    var id = id.split("::::")[0];
     showQC();
     if (!localStorage.getItem("queue")) {
         makePlayerVisible();
@@ -1398,6 +1399,7 @@ function setPresence(act) {
 }
 
 function getLyrics() {
+    document.getElementById("lyricsPage").innerHTML = "Loading...";
     var artist = document.getElementById("artistName").innerHTML;
     var track = document.getElementById("trackName").innerHTML;
     var xhr = new XMLHttpRequest();
@@ -1441,10 +1443,10 @@ function getArtist() {
             // nothing coded yet
             document.getElementById("artistCover").src = json.data.info.authorThumbnails[json.data.info.authorThumbnails.length-1].url;
             document.getElementById("artName").innerHTML = json.data.info.author;
-            document.getElementById("albumCount").innerHTML = json.data.playlists.items.length;
+            document.getElementById("albumCount").innerHTML = json.data.playlists.items.length.toLocaleString();
             document.getElementById("albumUnit").innerHTML = "playlists";
             document.getElementById("albumSectionUnit").innerHTML = "Playlists";
-            document.getElementById("artFollowerCount").innerHTML = json.data.info.subscriberCount;
+            document.getElementById("artFollowerCount").innerHTML = json.data.info.subscriberCount.toLocaleString();
             document.getElementById("artNumCat1").innerHTML = "subscribers";
             document.getElementById("artNumSrc1").innerHTML = "YouTube";
             //document.getElementById("albumsContainer").style.display = "none"

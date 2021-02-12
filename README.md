@@ -16,6 +16,7 @@ Blazebury is a music app written in NodeJS and Electron.
 - Soundcloud support (both as a metadata scraper and player).
 - Better music retrieval process.
 - Downloading of tracks/albums to allow offline play.
+- A way to actually pay artists for their work.
 
 ## screenshots
 

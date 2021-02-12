@@ -1,5 +1,5 @@
 console.log("Blazebury is starting...");
-console.log("Version 0.1.0");
+console.log("Version 0.2.0");
 require('dotenv').config()
 const { app, BrowserWindow } = require('electron');
 const http = require("http");
@@ -24,7 +24,7 @@ if (config.lastFmKey == "") {
   var lfmKey = config.lastFmKey;
 }
 const LastFM = require('last-fm');
-const lastfm = new LastFM(lfmKey, { userAgent: "BlazeburyMusic/0.1.0", minArtistListeners: 50, minTrackListeners: 100 });
+const lastfm = new LastFM(lfmKey, { userAgent: "BlazeburyMusic/0.2.0", minArtistListeners: 50, minTrackListeners: 100 });
 const DeezerPublicApi = require('deezer-public-api');
 const deezer = new DeezerPublicApi();
 const ytsr = require("ytsr");
