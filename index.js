@@ -51,14 +51,14 @@ function bootup() {
         background: "#282828",
         icon: "assets/icon.png",
         width: 1100,
-        minWidth: 650,
+        minWidth: 680,
         height: 900,
         frame: false,
         webPreferences: {
             nativeWindowOpen:true,
             contextIsolation:false,
-            nodeIntegration: true,
-            enableRemoteModule: true
+            nodeIntegration:true,
+            enableRemoteModule:true
         }
     });
     w.loadURL("http://localhost:808");

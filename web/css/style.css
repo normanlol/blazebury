@@ -15,6 +15,7 @@ body {
 
 * {
     outline: none;
+    scrollbar-color:#282828 black;
 }
 
 button {
@@ -46,13 +47,44 @@ button {
     width:100%;
 }
 
+@media (min-width:850px) {
+    
+    .header h2 {
+        margin:0;
+    }
+
+}
+
+@media (max-width:850px) {
+    .header h2, #showPlayer, #hidePlayer, .pageTitle {
+        display:none !important;
+    }
+
+    .header input {
+        margin-left:0 !important;
+    }
+
+    .player {
+        margin-bottom:0 !important;
+    }
+
+    .sectBlob {
+        width:98% !important;
+        height:auto !important;
+    }
+
+    .sectBlob img {
+        width:100px !important;
+        height:100px !important;
+        float:left;
+    }
+}
+
+
 .header * {
     float:left;
 }
 
-.header h2 {
-    margin:0;
-}
 
 .header a {
     color:white;
@@ -64,9 +96,14 @@ button {
     margin-top:4px;
 }
 
-.leftwing, .rightwing {
+.leftwing {
     height:100%;
-    width:45.9%;
+    width:300px;
+}
+
+.rightwing {
+    height:100%;
+    width:calc(90% - 300px);
 }
 
 #logo {
@@ -103,8 +140,8 @@ button {
 }
 
 #drag-region {
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
+    -webkit-user-select:none;
+    -webkit-app-region:drag;
 }
 
 .blur-on {
@@ -120,6 +157,7 @@ button {
     -webkit-transition: all 5s linear;
     -o-transition     : all 5s linear;
 }
+
 .blur-off {
     -webkit-filter: blur(0px) !important;
     -moz-filter   : blur(0px) !important;

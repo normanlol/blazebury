@@ -1,31 +1,34 @@
 var userAgent = navigator.userAgent.toLowerCase();
-if (userAgent.indexOf(' electron/') > -1) {
-  // In the Renderer process
-  const { ipcRenderer } = require('electron')
-  // In the Main process
-  const { ipcMain } = require('electron')
+if (userAgent.indexOf(" electron/") > -1) {
+    const { ipcRenderer } = require("electron");
+    const { ipcMain } = require("electron");
+    const remote = require("electron").remote;
+    const win = remote.getCurrentWindow();
 
-  const remote = require('electron').remote;
+    document.getElementById("max-button").style.display = "";
+    document.getElementById("restore-button").style.display = "none";
 
-  const win = remote.getCurrentWindow();
+    document.getElementById("window-controls").style.display = "";
 
-  document.getElementById("window-controls").style.display = "";
+    document.getElementById('min-button').addEventListener("click", event => {
+        win.minimize();
+    });
 
-  document.getElementById('min-button').addEventListener("click", event => {
-      win.minimize();
-  });
+    document.getElementById('max-button').addEventListener("click", event => {
+        win.maximize();
+        document.getElementById("restore-button").style.display = "";
+        document.getElementById("max-button").style.display = "none";
+    });
 
-  document.getElementById('max-button').addEventListener("click", event => {
-      win.maximize();
-  });
+    document.getElementById('restore-button').addEventListener("click", event => {
+        win.unmaximize();
+        document.getElementById("restore-button").style.display = "none";
+        document.getElementById("max-button").style.display = "";
+    });
 
-  document.getElementById('restore-button').addEventListener("click", event => {
-      win.unmaximize();
-  });
-
-  document.getElementById('close-button').addEventListener("click", event => {
-      win.close();
-  });
+    document.getElementById('close-button').addEventListener("click", event => {
+        win.close();
+    });
 }
 
 
