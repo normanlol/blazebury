@@ -15,12 +15,12 @@ if (!fs.existsSync("config.json")) {
 }
 const config = JSON.parse(fs.readFileSync("config.json"));
 if (config.lastFmKey == "") {
-  if (process.env.lastFmKey != undefined) {
-    var lfmKey = process.env.lastFmKey;
-  }else {
-    var lfmKey = "--only-replace-if-you-have-a-key--"
-  }
-}else {
+    if (process.env.lastFmKey != undefined) {
+        var lfmKey = process.env.lastFmKey;
+    } else {
+        var lfmKey = "--only-replace-if-you-have-a-key--"
+    }
+} else {
   var lfmKey = config.lastFmKey;
 }
 const LastFM = require('last-fm');
