@@ -29,6 +29,7 @@ const DeezerPublicApi = require('deezer-public-api');
 const deezer = new DeezerPublicApi();
 const ytsr = require("ytsr");
 const ytdl = require("ytdl-core");
+const ytch = require('yt-channel-info')
 const drpc = require("discord-rich-presence")(config.discordRpcId);
 const ftl = require("findthelyrics");
 
