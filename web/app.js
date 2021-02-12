@@ -7,7 +7,7 @@ if (checkPresence() == "true") {
 document.getElementById("loaded").style.display = "none";
 document.getElementById("progress").innerHTML = "No song is loaded.";
 
-window.addEventListener("click", function() {
+window.addEventListener("click", function(e) {
     if (menuVisible == true) {toggleMenu("hide");}
 });
 
@@ -25,7 +25,7 @@ window.addEventListener("contextmenu", function(e) {
         ) { var sId = e.target.parentElement.id;}
         else { var sId = e.target.id; }
         console.log(e.target)
-        document.querySelector(".menu").setAttribute("id", sId + "_context");
+        document.querySelector(".menu").setAttribute("id", sId + "::::context");
         var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
         const origin = {
             left: e.pageX,
@@ -803,7 +803,7 @@ function search() {
 }
 
 function addToQueue(id) {
-    var id = id.split("_")[0];
+    var id = id.split("::::")[0];
     showQC();
     if (!localStorage.getItem("queue")) {
         makePlayerVisible();
@@ -1365,6 +1365,7 @@ function setPresence(act) {
 }
 
 function getLyrics() {
+    document.getElementById("lyricsPage").innerHTML = "Loading...";
     var artist = document.getElementById("artistName").innerHTML;
     var track = document.getElementById("trackName").innerHTML;
     var xhr = new XMLHttpRequest();

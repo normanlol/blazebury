@@ -5,7 +5,7 @@ Blazebury is a music app written in NodeJS and Electron.
 
 ## features
 - Absolutely no DRM or tracking within the app.
-- More than one scraper (Deezer, Lastfm**, YouTube)
+- More than one scraper (Deezer, Lastfm**)
 - Can work outside of the app
 - In-app lyrics
 - Discord Rich Presence support
