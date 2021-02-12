@@ -130,6 +130,30 @@ async function renderServer(request, res) {
                             res.end(j);
                         }
                     })
+                } else if (config.dataSource == 3) {
+                    ytsr(u.query.q+' "music"').then(function(data) {
+                        var j = JSON.stringify({
+                            "results": data,
+                            "source": "youtube"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch(function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                            "code": err.code,
+                            "message": err.message
+                          }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    })
                 }
             } else {
                 var j = JSON.stringify({
@@ -223,10 +247,70 @@ async function renderServer(request, res) {
                     })
                     res.end(j);
                 }
+            } else if (config.dataSource == 3) {
+                if (u.query.id) {
+                    ytdl.getInfo(u.query.id).then(function(data) {
+                        var j = JSON.stringify({
+                            data,
+                            "source": "youtube"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch(function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    });
+                } else {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "reqsNotMet",
+                            "message": "A track ID is required for this endpoint."
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
+                }
+
             }
         } else if (path[1] == "get" && path[2] == "track" && path[3] == "stream") {
-            if (u.query.artist && u.query.track) {
-                var fq = '"' + u.query.artist.toLowerCase() + '" "' + u.query.track.toLowerCase() + '" "auto generated"';
+            if (u.query.track) {
+                if (!u.query.artist && config.dataSource != 3) {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "reqsNotMet",
+                            "message": "A track name and artist name are required for this endpoint."
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
+                }
+
+                var fq;
+
+                if (config.dataSource != 3) {
+                  fq = '"' + u.query.track.toLowerCase() + '"';
+                  fq = '"' + u.query.artist.toLowerCase() + '"' + fq
+                  fq = fq + ' "auto generated"';
+
+
                 ytsr(fq).then(function(data) {
                     if (data.items[0]) {
                         if (data.items[0].type == "video") {
@@ -428,18 +512,61 @@ async function renderServer(request, res) {
                     })
                     res.end(j);
                 })
-            } else {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "reqsNotMet",
-                        "message": "A track name and artist name are required for this endpoint."
+              }else{
+                ytdl(u.query.track).on("info", function(info) {
+                    for (var c in info.formats) {
+                        var i = [];
+                        if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                            var o = info.formats[c];
+                            i.push(o);
+                        }
+                        if (i.length > 0) {
+                            var j = JSON.stringify(i);
+                            res.writeHead(200, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        } else {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": "noFormats",
+                                    "message": "A valid format could not be found."
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }
                     }
+                }).on("error",function(err) {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": err.code,
+                            "message": err.message
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
                 });
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
-                })
-                res.end(j);
+              }
+            } else {
+              var j = JSON.stringify({
+                  "err": {
+                      "code": "reqsNotMet",
+                      "message": "A track name and artist name are required for this endpoint."
+                  }
+              });
+              res.writeHead(500, {
+                  "Access-Control-Allow-Origin": "*",
+                  "Content-Type":"application/json"
+              })
+              res.end(j);
             }
         } else if (path[1] == "get" && path[2] == "trending") {
             if (config.dataSource == 1) {
@@ -492,6 +619,18 @@ async function renderServer(request, res) {
                         res.end(j);
                     }
                 })
+            } else if (config.dataSource == 3) {
+                var j = JSON.stringify({
+                    "err": {
+                        "code": "ytTrending",
+                        "message": "the YouTube data source doesn't have a trending endpoint yet!"
+                    }
+                });
+                res.writeHead(500, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type":"application/json"
+                })
+                res.end(j);
             }
         } else if (path[1] == "config") {
             var t = fs.readFileSync("config.json").toString();
@@ -615,6 +754,18 @@ async function renderServer(request, res) {
                             res.end(j);
                         }
                     })
+                } else if (config.dataSource == 3) {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "ytArtist",
+                            "message": "the YouTube data source doesn't have an artist endpoint yet!"
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
                 }
             } else {
                 var j = JSON.stringify({
@@ -681,6 +832,18 @@ async function renderServer(request, res) {
                             res.end(j);
                         }
                     })
+                } else if (config.dataSource == 3) {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "ytArtistAlbums",
+                            "message": "the YouTube data source doesn't have an artist albums endpoint yet!"
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
                 }
             } else {
                 var j = JSON.stringify({
@@ -761,6 +924,18 @@ async function renderServer(request, res) {
                         })
                         res.end(j);
                     }
+                } else if (config.dataSource == 3) {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "ytAlbums",
+                            "message": "the YouTube data source doesn't have an albums endpoint yet!"
+                        }
+                    });
+                    res.writeHead(500, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
                 }
             } else {
                 var j = JSON.stringify({
