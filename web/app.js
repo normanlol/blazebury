@@ -1348,6 +1348,14 @@ function getArtist() {
             dumpIntoSection("/api/get/artist/albums?id=" + id, "artAlbums");
         } else if (json.source == "youtube") {
             // nothing coded yet
+            document.getElementById("artistCover").src = json.data.info.authorThumbnails[json.data.info.authorThumbnails.length-1].url;
+            document.getElementById("artName").innerHTML = json.data.info.author;
+            document.getElementById("artAlbCountContainer").innerHTML = `<span class="material-icons">album</span> <span id="albumCount">Not available for YouTube data source</span>`;
+            document.getElementById("artFollowerCount").innerHTML = json.data.info.subscriberCount;
+            document.getElementById("artNumCat1").innerHTML = "subscribers";
+            document.getElementById("artNumSrc1").innerHTML = "YouTube";
+            document.getElementById("albumsContainer").style.display = "none"
+            //dumpIntoSection("/api/get/artist/albums?id=" + id, "artAlbums");
         }
     }
 }
