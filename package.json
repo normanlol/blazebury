@@ -1,6 +1,6 @@
 {
   "name": "blazebury",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "electron/node-based drm-free music app",
   "main": "index.js",
   "scripts": {
@@ -36,5 +36,8 @@
   },
   "devDependencies": {
     "electron": "^11.2.3"
+  },
+  "directories": {
+    "doc": "docs"
   }
 }

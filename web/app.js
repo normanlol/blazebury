@@ -693,7 +693,7 @@ function search() {
         xhr.onload = function () {
             var json = JSON.parse(xhr.responseText);
             document.getElementById("results").innerHTML = "";
-            if (!json.results && json.err) {document.getElementById("results").innerHTML = "Error retreiving results. <i>" + json.err.message + "</i>"; return;}
+            if (!json.results && json.err) {document.getElementById("results").innerHTML = "<span style='margin-left:1.5%;'>Error retreiving results. <i>" + json.err.message + "</i></span>"; return;}
             if (json.source == "deezer") {
                 for (var c in json.results.data) {
                     if (json.results.data[c].type == "track") {
