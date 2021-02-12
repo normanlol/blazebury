@@ -420,32 +420,63 @@ function dumpIntoSection(location, id) {
         } else if (json.source == "youtube") {
             document.getElementById(id+"Load").style.display = "none";
             document.getElementById(id).style.display = "";
-            for (var c in json.data.items) {
-                var lnk = document.createElement("A");
-                lnk.href = "#album#" + json.data.items[c].playlistId
-                var div = document.createElement("DIV");
-                div.classList.add("sectBlob");
-                div.id = json.data.items[c].playlistId;
-                div.onclick = function () {getStream(this.id)}
-                var cover = document.createElement("IMG");
-                if (json.data.items[c].playlistThumbnail) {cover.src = json.data.items[c].playlistThumbnail;}
-                else {cover.src = "icon.png";}
-                cover.onerror = function () {this.src = "icon.png";}
-                div.appendChild(cover);
-                var title = document.createElement("H3");
-                if (json.data.items[c].title.length <= 40) {
-                    title.innerHTML = json.data.items[c].title;
-                } else {
-                    title.innerHTML = json.data.items[c].title.substring(0,40).trim()+"...";
+            if (json.data.id) {
+                for (var c in json.data.items) {
+
+                    // var lnk = document.createElement("A");
+                    // lnk.href = "#track#" + json.data.items[c].id
+                    var div = document.createElement("DIV");
+                    div.classList.add("sectBlob");
+                    div.id = json.data.items[c].id;
+                    div.onclick = function () {getStream(this.id)}
+                    var cover = document.createElement("IMG");
+                    if (json.data.items[c].bestThumbnail) {cover.src = json.data.items[c].bestThumbnail.url;}
+                    else {cover.src = "icon.png";}
+                    cover.onerror = function () {this.src = "icon.png";}
+                    div.appendChild(cover);
+                    var title = document.createElement("H3");
+                    if (json.data.items[c].title.length <= 40) {
+                        title.innerHTML = json.data.items[c].title;
+                    } else {
+                        title.innerHTML = json.data.items[c].title.substring(0,40).trim()+"...";
+                    }
+                    title.title = json.data.items[c].title;
+                    div.appendChild(title);
+                    var author = document.createElement("H4");
+                    author.innerHTML = json.data.items[c].author.name;
+                    author.title = json.data.items[c].author.name;
+                    div.appendChild(author);
+                    //lnk.append(div);
+                    document.getElementById(id).appendChild(div);
                 }
-                title.title = json.data.items[c].title;
-                div.appendChild(title);
-                var author = document.createElement("H4");
-                author.innerHTML = json.data.items[c].author;
-                author.title = json.data.items[c].author;
-                div.appendChild(author);
-                lnk.append(div);
-                document.getElementById(id).appendChild(lnk);
+            } else{
+                for (var c in json.data.items) {
+                    var lnk = document.createElement("A");
+                    lnk.href = "#album#" + json.data.items[c].playlistId
+                    var div = document.createElement("DIV");
+                    div.classList.add("sectBlob");
+                    div.id = json.data.items[c].playlistId;
+                    div.onclick = function () {getStream(this.id)}
+                    var cover = document.createElement("IMG");
+                    if (json.data.items[c].playlistThumbnail) {cover.src = json.data.items[c].playlistThumbnail;}
+                    else {cover.src = "icon.png";}
+                    cover.onerror = function () {this.src = "icon.png";}
+                    div.appendChild(cover);
+                    var title = document.createElement("H3");
+                    if (json.data.items[c].title.length <= 40) {
+                        title.innerHTML = json.data.items[c].title;
+                    } else {
+                        title.innerHTML = json.data.items[c].title.substring(0,40).trim()+"...";
+                    }
+                    title.title = json.data.items[c].title;
+                    div.appendChild(title);
+                    var author = document.createElement("H4");
+                    author.innerHTML = json.data.items[c].author;
+                    author.title = json.data.items[c].author;
+                    div.appendChild(author);
+                    lnk.append(div);
+                    document.getElementById(id).appendChild(lnk);
+                }
             }
         }
     }
