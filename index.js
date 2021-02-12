@@ -63,6 +63,7 @@ function bootup() {
 
 async function renderServer(request, res) {
     var u = url.parse(request.url, true);
+    console.log(request.url)
     var path = u.pathname;
     if (path.substr(0,4) == "/api") {
         var path = path.split("/").slice(1);
@@ -755,17 +756,29 @@ async function renderServer(request, res) {
                         }
                     })
                 } else if (config.dataSource == 3) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": "ytArtist",
-                            "message": "the YouTube data source doesn't have an artist endpoint yet!"
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
+                    ytch.getChannelInfo(u.query.id).then((response) => {
+                        var j = JSON.stringify({
+                            response,
+                            "source": "lastfm"
+                        });
+                        res.writeHead(200, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }).catch((err) => {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
                     })
-                    res.end(j);
                 }
             } else {
                 var j = JSON.stringify({
