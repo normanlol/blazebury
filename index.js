@@ -52,11 +52,12 @@ app.on("activate", function() {
 
 async function bootup() {
     const w = new BrowserWindow({
-        background: "#282828",
-        icon: "assets/icon.png",
-        title: "Blazebury Music",
-        width: 1100,
-        height: 900,
+        background:"#282828",
+        icon:"assets/icon.png",
+        title:"Blazebury Music",
+        width:1100,
+        height:900,
+        minWidth:515,
         frame: false,
         webPreferences: {
             nativeWindowOpen:true,
