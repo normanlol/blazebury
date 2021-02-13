@@ -5,21 +5,21 @@ html, body {
     --thumbBG:#282828;
 }
 
-.main::-webkit-scrollbar {
+#main::-webkit-scrollbar {
     width:11px;
 }
 
-.main::-webkit-scrollbar-track {
+#main::-webkit-scrollbar-track {
     background:var(--scrollbarBG);
 }
 
-.main::-webkit-scrollbar-thumb {
+#main::-webkit-scrollbar-thumb {
     background-color:var(--thumbBG) ;
     border-radius:6px;
     border:3px solid var(--scrollbarBG);
 }
 
-.main {
+#main {
     scrollbar-width:thin;
     scrollbar-color:var(--thumbBG) var(--scrollbarBG);
 }
@@ -31,7 +31,6 @@ body {
     color:white;
     font-family:Helvetica, Verdana;
     margin:0;
-    margin-top:45px;
     overflow-y: hidden;
     padding:0;
     overflow-x:hidden;
@@ -128,6 +127,11 @@ button {
         height:100%;
         width:calc(90% - 167px);
     }
+
+    #main {
+        transition: height 0.5s;
+        height: calc(calc(100% - 245px) - 30px) !important;
+    }
 }
 
 .header * {
@@ -178,12 +182,12 @@ button {
 }
 
 #window-controls input[type="image"] {
-  background:#282828;
-  -webkit-app-region:no-drag;
-  width:15px;
-  height:15px;
-  padding:5px;
-  margin-right:5px;
+    background:#282828;
+    -webkit-app-region:no-drag;
+    width:15px;
+    height:15px;
+    padding:5px;
+    margin-right:5px;
 }
 
 #drag-region {
@@ -192,10 +196,14 @@ button {
     -webkit-app-region:drag;
 }
 
-.main {
-  overflow-y: auto;
-  height: calc(100% - 45px);
-  overflow-x: hidden;
+#main {
+    margin-top:45px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    transition: height 0.5s;
+    overflow-y: auto;
+    height: calc(calc(100% - 45px) - 30px);
+    overflow-x: hidden;
 }
 
 .blur-on {

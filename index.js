@@ -66,6 +66,7 @@ async function bootup() {
             enableRemoteModule:true
         }
     });
+    w.setBackgroundColor('#000000')
     w.loadFile("preload/index.html");
     var k = await scKey.fetchKey();
     var r = await scKey.testKey(k);
@@ -1039,10 +1040,14 @@ async function renderServer(request, res) {
             if (u.query.artist && u.query.title) {
                 ftl.find(u.query.artist, u.query.title, function(err, resp) {
                     if (!err) {
+                        if (resp==""||resp==null) {
+                          resp = "Could not find lyrics for this track."
+                        }
                         res.writeHead(200, {
                             "Access-Control-Allow-Origin": "*",
                             "Content-Type":"text/plain"
                         })
+
                         res.end(resp);
                     } else {
                         res.writeHead(500, {

@@ -212,6 +212,7 @@ function showLyrics() {
 }
 
 function refresh() {
+    document.getElementById("main").scrollTop = 0;
     setTimeout(function () {
         document.getElementById("lyricsLink").href = "#lyrics";
         let el = document.getElementById('settings');
@@ -658,14 +659,15 @@ function getStream(id) {
 }
 
 function makePlayerVisible() {
-    var elements = document.getElementsByClassName('hoverPage');
-    for (var i in elements) {
-        if (elements.hasOwnProperty(i)) {
-            elements[i].setAttribute("player", "shown");
-        }
-    }
     if (document.getElementById("player").visible == "1") {return;}
     else {
+        var elements = document.getElementsByClassName('hoverPage');
+        for (var i in elements) {
+            if (elements.hasOwnProperty(i)) {
+                elements[i].setAttribute("player", "shown");
+            }
+        }
+        document.getElementById("main").style.height = 'calc(calc(100% - 245px) - 30px)';
         document.getElementById("player").style = "margin-bottom:0;";
         document.getElementById("player").visible = "1";
         document.getElementById("showPlayer").style.display = "none";
@@ -682,6 +684,7 @@ function hidePlayer() {
     }
     if (document.getElementById("player").visible == "0") {return;}
     else {
+        document.getElementById("main").style.height = 'calc(calc(100% - 45px) - 30px';
         document.getElementById("player").style = "margin-bottom:-200px;";
         document.getElementById("player").visible = "0";
         document.getElementById("showPlayer").style.display = "";
@@ -998,9 +1001,8 @@ function addToQueue(id) {
                     }
                 }
             } else if (json.source == "youtube") {
-                // not finished yet
                 if (!document.getElementById("player").getAttribute("playing-id")) {
-                    if (json.data.images) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails - 1].url;} else {var cover = "icon.png"}
+                    if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails - 1].url;} else {var cover = "icon.png"}
                     document.getElementById("cover").src = cover;
                     document.getElementById("artistLink").href = "#artist#" + json.data.videoDetails.externalChannelId;
                     document.getElementById("artistName").innerHTML = json.data.videoDetails.ownerChannelName;
