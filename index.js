@@ -56,7 +56,6 @@ async function bootup() {
         icon: "assets/icon.png",
         title: "Blazebury Music",
         width: 1100,
-        minWidth: 680,
         height: 900,
         frame: false,
         webPreferences: {
