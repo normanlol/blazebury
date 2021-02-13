@@ -4,6 +4,7 @@
         <title>Blazebury Music</title>
         <meta charset="UTF-8">
         <link href="css/style.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="shortcut icon" type="image/png" href="/icon.png"/>
@@ -24,12 +25,12 @@
                   <input type="image" draggable="false" src="assets/window/max.png" id="max-button" alt="Maximize window"></input>
                   <input type="image" draggable="false" src="assets/window/min.png" id="min-button" alt="Minimize window"></input>
                 </div>
-
+                
                 <a href="#settings">
-                    <button onClick="refresh();" draggable="false">Settings</button>
+                    <button draggable="false">Settings</button>
                 </a>
                 <a href="#about">
-                    <button onClick="refresh();" draggable="false">About</button>
+                    <button draggable="false">About</button>
                 </a>
                 <div>
                     <button id="showPlayer" onclick="makePlayerVisible();" draggable="false">Show Player</button>
@@ -51,9 +52,7 @@
                         <div class="secLoad" id="sect1Load">
                             Loading...
                         </div>
-                        <div class="sectInner" id="sect1">
-
-                        </div>
+                        <div class="sectInner" id="sect1"></div>
                     </div>
                 </div>
             </div>

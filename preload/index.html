@@ -18,7 +18,31 @@
                 padding:0;
                 overflow-x:hidden;
             }
+            .header {
+                position: fixed;
+                left: 0px;
+                top: 0px;
+                z-index: 999;
+                background:black;
+                padding:10px;
+                height:25px;
+                width:100%;
+            }
+            .header h2 {
+                margin:0;
+            }
+            .preload * {
+                margin-top:0;
+                margin-bottom:5px;
+                margin-left:20px;
+            }
         </style>
-        <h2>Please wait...</h2>
+        <div id="drag-region" class="header">
+            <h2>blazebury</h2>
+        </div>
+        <div class="preload">
+            <h2>Please wait...</h2>
+            <h3>We are getting things ready for you!</h3>
+        </div>
     </body>
 </html>

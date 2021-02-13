@@ -48,11 +48,19 @@ button {
 }
 
 @media (min-width:850px) {
-
     .header h2 {
         margin:0;
     }
 
+    .leftwing {
+        height:100%;
+        width:300px;
+    }
+
+    .rightwing {
+        height:100%;
+        width:calc(90% - 300px);
+    }
 }
 
 @media (max-width:850px) {
@@ -86,13 +94,21 @@ button {
         height:100px !important;
         float:left;
     }
-}
 
+    .leftwing {
+        height:100%;
+        width:167px;
+    }
+
+    .rightwing {
+        height:100%;
+        width:calc(90% - 167px);
+    }
+}
 
 .header * {
     float:left;
 }
-
 
 .header a {
     color:white;
@@ -101,16 +117,6 @@ button {
 
 .header input {
     margin-top:4px;
-}
-
-.leftwing {
-    height:100%;
-    width:300px;
-}
-
-.rightwing {
-    height:100%;
-    width:calc(90% - 300px);
 }
 
 #logo {
@@ -138,7 +144,7 @@ button {
 }
 
 .rightwing button {
-    cursor: pointer;
+    cursor:pointer;
     -webkit-app-region: no-drag;
     margin-top:4px;
 }
@@ -157,6 +163,7 @@ button {
 
 #drag-region {
     -webkit-user-select:none;
+    user-select:none;
     -webkit-app-region:drag;
 }
 
@@ -199,11 +206,11 @@ button {
 }
 
 .hoverPage[player="shown"] {
-  height: calc(100% - 320px);
+    height: calc(100% - 320px);
 }
 
 .hoverPage[player="hidden"] {
-  height: calc(100% - 120px);
+    height: calc(100% - 120px);
 }
 
 .page {
@@ -353,8 +360,8 @@ button {
 }
 
 .sectBlob:hover {
-  background-color: rgba(0, 0, 0, 0.25);
-  transform: translate(0, 5px);
+    background-color: rgba(0, 0, 0, 0.25);
+    transform: translate(0, 5px);
 }
 
 .sectBlob img {

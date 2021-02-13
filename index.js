@@ -21,16 +21,20 @@ if (config.lastFmKey == "") {
         var lfmKey = "--only-replace-if-you-have-a-key--"
     }
 } else {
-  var lfmKey = config.lastFmKey;
+    var lfmKey = config.lastFmKey;
 }
-const LastFM = require('last-fm');
+const LastFM = require("last-fm");
 const lastfm = new LastFM(lfmKey, { userAgent: "BlazeburyMusic/0.2.0", minArtistListeners: 50, minTrackListeners: 100 });
 const DeezerPublicApi = require('deezer-public-api');
 const deezer = new DeezerPublicApi();
 const ytsr = require("ytsr");
 const ytdl = require("ytdl-core");
-const ytpl = require('ytpl');
-const ytch = require('yt-channel-info')
+const ytpl = require("ytpl");
+const ytch = require("yt-channel-info");
+const scdl = require("soundcloud-downloader");
+const scKey = require("soundcloud-key-fetch");
+const scSearcher = require("sc-searcher");
+const scSearch = new scSearcher();
 const drpc = require("discord-rich-presence")(config.discordRpcId);
 const ftl = require("findthelyrics");
 
@@ -46,10 +50,11 @@ app.on("activate", function() {
     }
 })
 
-function bootup() {
+async function bootup() {
     const w = new BrowserWindow({
         background: "#282828",
         icon: "assets/icon.png",
+        title: "Blazebury Music",
         width: 1100,
         minWidth: 680,
         height: 900,
@@ -61,8 +66,12 @@ function bootup() {
             enableRemoteModule:true
         }
     });
-    w.loadURL("http://localhost:808");
+    w.loadFile("preload/index.html");
+    var k = await scKey.fetchKey();
+    var r = await scKey.testKey(k);
+    if (r == true) { scSearch.init(k); }
     http.createServer(renderServer).listen(808);
+    w.loadURL("http://localhost:808");
 }
 
 
