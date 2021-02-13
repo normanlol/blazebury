@@ -48,7 +48,7 @@ button {
 }
 
 @media (min-width:850px) {
-    
+
     .header h2 {
         margin:0;
     }
@@ -58,6 +58,14 @@ button {
 @media (max-width:850px) {
     .header h2, #showPlayer, #hidePlayer, .pageTitle {
         display:none !important;
+    }
+
+    .leftwing {
+        width: 170px !important;
+    }
+
+    .rightwing {
+        width:calc(90% - 180px) !important;
     }
 
     .header input {
