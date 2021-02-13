@@ -5,18 +5,23 @@ html, body {
     --thumbBG:#282828;
 }
 
-body::-webkit-scrollbar {
+.main::-webkit-scrollbar {
     width:11px;
 }
 
-body::-webkit-scrollbar-track {
+.main::-webkit-scrollbar-track {
     background:var(--scrollbarBG);
 }
 
-body::-webkit-scrollbar-thumb {
+.main::-webkit-scrollbar-thumb {
     background-color:var(--thumbBG) ;
     border-radius:6px;
     border:3px solid var(--scrollbarBG);
+}
+
+.main {
+    scrollbar-width:thin;
+    scrollbar-color:var(--thumbBG) var(--scrollbarBG);
 }
 
 body {
@@ -24,10 +29,10 @@ body {
     scrollbar-color:var(--thumbBG) var(--scrollbarBG);
     background:#282828;
     color:white;
-    scrollbar-color:#282828 black;
     font-family:Helvetica, Verdana;
     margin:0;
-    margin-top:60px;
+    margin-top:45px;
+    overflow-y: hidden;
     padding:0;
     overflow-x:hidden;
 }
@@ -185,6 +190,12 @@ button {
     -webkit-user-select:none;
     user-select:none;
     -webkit-app-region:drag;
+}
+
+.main {
+  overflow-y: auto;
+  height: calc(100% - 45px);
+  overflow-x: hidden;
 }
 
 .blur-on {
