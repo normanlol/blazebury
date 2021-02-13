@@ -92,11 +92,11 @@ button {
     }
 
     .leftwing {
-        width:170px !important;
+        width:160px !important;
     }
 
     .rightwing {
-        width:calc(90% - 180px) !important;
+        width:calc(90% - 145px) !important;
     }
 
     .header input {
@@ -143,10 +143,6 @@ button {
     text-decoration:none;
 }
 
-.header input {
-    margin-top:4px;
-}
-
 #logo {
     -webkit-app-region:no-drag;
     margin-right:9px;
@@ -158,7 +154,8 @@ button {
 
 .leftwing input {
     -webkit-app-region:no-drag;
-    width:160px;
+    width:150px;
+    height:20px
 }
 
 .rightwing {
@@ -174,7 +171,6 @@ button {
 .rightwing button {
     cursor:pointer;
     -webkit-app-region:no-drag;
-    margin-top:4px;
 }
 
 .rightwing a, #buttonBar a {
