@@ -317,38 +317,106 @@ async function renderServer(request, res) {
                     })
                     res.end(j);
                 }
-
                 var fq;
-
                 if (config.dataSource != 3) {
-                  fq = '"' + u.query.track.toLowerCase() + '"';
-                  fq = '"' + u.query.artist.toLowerCase() + '"' + fq
-                  fq = fq + ' "auto generated"';
+                    fq = '"' + u.query.track.toLowerCase() + '"';
+                    fq = '"' + u.query.artist.toLowerCase() + '"' + fq
+                    fq = fq + ' "auto generated"';
 
-
-                ytsr(fq).then(function(data) {
-                    if (data.items[0]) {
-                        if (data.items[0].type == "video") {
-                            if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
-                                ytdl(data.items[0].url).on("info", function(info) {
-                                    for (var c in info.formats) {
-                                        var i = [];
-                                        if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
-                                            var o = info.formats[c];
-                                            i.push(o);
+                    ytsr(fq).then(function(data) {
+                        if (data.items[0]) {
+                            if (data.items[0].type == "video") {
+                                if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
+                                    ytdl(data.items[0].url).on("info", function(info) {
+                                        for (var c in info.formats) {
+                                            var i = [];
+                                            if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                                                var o = info.formats[c];
+                                                i.push(o);
+                                            }
+                                            if (i.length > 0) {
+                                                var j = JSON.stringify(i);
+                                                res.writeHead(200, {
+                                                    "Access-Control-Allow-Origin": "*",
+                                                    "Content-Type":"application/json"
+                                                })
+                                                res.end(j);
+                                            } else {
+                                                var j = JSON.stringify({
+                                                    "err": {
+                                                        "code": "noFormats",
+                                                        "message": "A valid format could not be found."
+                                                    }
+                                                });
+                                                res.writeHead(500, {
+                                                    "Access-Control-Allow-Origin": "*",
+                                                    "Content-Type":"application/json"
+                                                })
+                                                res.end(j);
+                                            }
                                         }
-                                        if (i.length > 0) {
-                                            var j = JSON.stringify(i);
-                                            res.writeHead(200, {
-                                                "Access-Control-Allow-Origin": "*",
-                                                "Content-Type":"application/json"
-                                            })
-                                            res.end(j);
+                                    }).on("error",function(err) {
+                                        var j = JSON.stringify({
+                                            "err": {
+                                                "code": err.code,
+                                                "message": err.message
+                                            }
+                                        });
+                                        res.writeHead(500, {
+                                            "Access-Control-Allow-Origin": "*",
+                                            "Content-Type":"application/json"
+                                        })
+                                        res.end(j);
+                                    });
+                                } else {
+                                    if (data.items[1] && data.items[1].type == "video") {
+                                        if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
+                                            ytdl(data.items[0].url).on("info", function(info) {
+                                                for (var c in info.formats) {
+                                                    var i = [];
+                                                    if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                                                        var o = info.formats[c];
+                                                        i.push(o);
+                                                    }
+                                                    if (i.length > 0) {
+                                                        var j = JSON.stringify(i);
+                                                        res.writeHead(200, {
+                                                            "Access-Control-Allow-Origin": "*",
+                                                            "Content-Type":"application/json"
+                                                        })
+                                                        res.end(j);
+                                                    } else {
+                                                        var j = JSON.stringify({
+                                                            "err": {
+                                                                "code": "noFormats",
+                                                                "message": "A valid format could not be found."
+                                                            }
+                                                        });
+                                                        res.writeHead(500, {
+                                                            "Access-Control-Allow-Origin": "*",
+                                                            "Content-Type":"application/json"
+                                                        })
+                                                        res.end(j);
+                                                    }
+                                                }
+                                            }).on("error",function(err) {
+                                                var j = JSON.stringify({
+                                                    "err": {
+                                                        "code": err.code,
+                                                        "message": err.message
+                                                    }
+                                                });
+                                                res.writeHead(500, {
+                                                    "Access-Control-Allow-Origin": "*",
+                                                    "Content-Type":"application/json"
+                                                })
+                                                res.end(j);
+                                            });
                                         } else {
                                             var j = JSON.stringify({
                                                 "err": {
-                                                    "code": "noFormats",
-                                                    "message": "A valid format could not be found."
+                                                    "code": "noSources",
+                                                    "message": "A valid source could not be found. If you believe this is in error, check the console."
                                                 }
                                             });
                                             res.writeHead(500, {
@@ -357,20 +425,20 @@ async function renderServer(request, res) {
                                             })
                                             res.end(j);
                                         }
+                                    } else {
+                                        var j = JSON.stringify({
+                                            "err": {
+                                                "code": "noSources",
+                                                "message": "A valid source could not be found. If you believe this is in error, check the console."
+                                            }
+                                        });
+                                        res.writeHead(500, {
+                                            "Access-Control-Allow-Origin": "*",
+                                            "Content-Type":"application/json"
+                                        })
+                                        res.end(j);
                                     }
-                                }).on("error",function(err) {
-                                    var j = JSON.stringify({
-                                        "err": {
-                                            "code": err.code,
-                                            "message": err.message
-                                        }
-                                    });
-                                    res.writeHead(500, {
-                                        "Access-Control-Allow-Origin": "*",
-                                        "Content-Type":"application/json"
-                                    })
-                                    res.end(j);
-                                });
+                                }
                             } else {
                                 if (data.items[1] && data.items[1].type == "video") {
                                     if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
@@ -428,125 +496,13 @@ async function renderServer(request, res) {
                                         })
                                         res.end(j);
                                     }
-                                } else {
-                                    var j = JSON.stringify({
-                                        "err": {
-                                            "code": "noSources",
-                                            "message": "A valid source could not be found. If you believe this is in error, check the console."
-                                        }
-                                    });
-                                    res.writeHead(500, {
-                                        "Access-Control-Allow-Origin": "*",
-                                        "Content-Type":"application/json"
-                                    })
-                                    res.end(j);
                                 }
                             }
-                        } else {
-                            if (data.items[1] && data.items[1].type == "video") {
-                                if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
-                                    ytdl(data.items[0].url).on("info", function(info) {
-                                        for (var c in info.formats) {
-                                            var i = [];
-                                            if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
-                                                var o = info.formats[c];
-                                                i.push(o);
-                                            }
-                                            if (i.length > 0) {
-                                                var j = JSON.stringify(i);
-                                                res.writeHead(200, {
-                                                    "Access-Control-Allow-Origin": "*",
-                                                    "Content-Type":"application/json"
-                                                })
-                                                res.end(j);
-                                            } else {
-                                                var j = JSON.stringify({
-                                                    "err": {
-                                                        "code": "noFormats",
-                                                        "message": "A valid format could not be found."
-                                                    }
-                                                });
-                                                res.writeHead(500, {
-                                                    "Access-Control-Allow-Origin": "*",
-                                                    "Content-Type":"application/json"
-                                                })
-                                                res.end(j);
-                                            }
-                                        }
-                                    }).on("error",function(err) {
-                                        var j = JSON.stringify({
-                                            "err": {
-                                                "code": err.code,
-                                                "message": err.message
-                                            }
-                                        });
-                                        res.writeHead(500, {
-                                            "Access-Control-Allow-Origin": "*",
-                                            "Content-Type":"application/json"
-                                        })
-                                        res.end(j);
-                                    });
-                                } else {
-                                    var j = JSON.stringify({
-                                        "err": {
-                                            "code": "noSources",
-                                            "message": "A valid source could not be found. If you believe this is in error, check the console."
-                                        }
-                                    });
-                                    res.writeHead(500, {
-                                        "Access-Control-Allow-Origin": "*",
-                                        "Content-Type":"application/json"
-                                    })
-                                    res.end(j);
-                                }
-                            }
-                        }
-                   } else {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": "noSources",
-                                "message": "A valid source could not be found. If you believe this is in error, check the console."
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }
-                }).catch(function(err) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": err.code,
-                            "message": err.message
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                })
-              }else{
-                ytdl(u.query.track).on("info", function(info) {
-                    for (var c in info.formats) {
-                        var i = [];
-                        if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
-                            var o = info.formats[c];
-                            i.push(o);
-                        }
-                        if (i.length > 0) {
-                            var j = JSON.stringify(i);
-                            res.writeHead(200, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        } else {
+                    } else {
                             var j = JSON.stringify({
                                 "err": {
-                                    "code": "noFormats",
-                                    "message": "A valid format could not be found."
+                                    "code": "noSources",
+                                    "message": "A valid source could not be found. If you believe this is in error, check the console."
                                 }
                             });
                             res.writeHead(500, {
@@ -555,33 +511,74 @@ async function renderServer(request, res) {
                             })
                             res.end(j);
                         }
-                    }
-                }).on("error",function(err) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": err.code,
-                            "message": err.message
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
+                    }).catch(function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
                     })
-                    res.end(j);
-                });
-              }
+                } else {
+                    ytdl(u.query.track).on("info", function(info) {
+                        for (var c in info.formats) {
+                            var i = [];
+                            if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                                var o = info.formats[c];
+                                i.push(o);
+                            }
+                            if (i.length > 0) {
+                                var j = JSON.stringify(i);
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            } else {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": "noFormats",
+                                        "message": "A valid format could not be found."
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }
+                        }
+                    }).on("error",function(err) {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": err.code,
+                                "message": err.message
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    });
+                }
             } else {
-              var j = JSON.stringify({
-                  "err": {
-                      "code": "reqsNotMet",
-                      "message": "A track name and artist name are required for this endpoint."
-                  }
-              });
-              res.writeHead(500, {
-                  "Access-Control-Allow-Origin": "*",
-                  "Content-Type":"application/json"
-              })
-              res.end(j);
+                var j = JSON.stringify({
+                    "err": {
+                        "code": "reqsNotMet",
+                        "message": "A track name and artist name are required for this endpoint."
+                    }
+                });
+                res.writeHead(500, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type":"application/json"
+                });
+                res.end(j);
             }
         } else if (path[1] == "get" && path[2] == "trending") {
             if (config.dataSource == 1) {
