@@ -46,6 +46,11 @@ button {
     border:0;
     height:25px;
     margin-right:5px;
+    transition:background 0.5s;
+}
+
+button:hover {
+    background:#535353;
 }
 
 @keyframes entrance {
@@ -183,7 +188,7 @@ button {
 .rightwing {
     float:right;
     text-align:right;
-    padding-right:20px;
+    padding-right:10px;
 }
 
 .rightwing * {
@@ -199,13 +204,16 @@ button {
     cursor:initial;
 }
 
-#window-controls input[type="image"] {
-    background:#282828;
-    -webkit-app-region:no-drag;
-    width:15px;
+#window-controls button {
+    width:25px;
+    height:25px;
+}
+
+#window-controls button img {
     height:15px;
-    padding:5px;
-    margin-right:5px;
+    width:15px;
+    margin-right:-0.5px;
+    text-align:center;
 }
 
 #drag-region {

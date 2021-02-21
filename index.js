@@ -58,7 +58,7 @@ async function bootup() {
         width:1100,
         height:900,
         minWidth:515,
-        frame: false,
+        frame:false,
         webPreferences: {
             nativeWindowOpen:true,
             contextIsolation:false,
@@ -66,7 +66,7 @@ async function bootup() {
             enableRemoteModule:true
         }
     });
-    w.setBackgroundColor('#000000')
+    w.setBackgroundColor("#000000");
     w.loadFile("preload/index.html");
     var k = await scKey.fetchKey();
     var r = await scKey.testKey(k);

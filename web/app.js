@@ -1,4 +1,4 @@
-let win;
+var win;
 
 var userAgent = navigator.userAgent.toLowerCase();
 if (userAgent.indexOf(" electron/") > -1) {
@@ -6,12 +6,11 @@ if (userAgent.indexOf(" electron/") > -1) {
     const { ipcMain } = require("electron");
     const remote = require("electron").remote;
     win = remote.getCurrentWindow();
-    document.getElementById("window-controls").style.display = "";
 
     document.getElementById("max-button").style.display = "";
     document.getElementById("restore-button").style.display = "none";
 
-    win = remote.getCurrentWindow();
+    document.getElementById("window-controls").style.display = "";
 
     document.getElementById('min-button').addEventListener("click", event => {
         win.minimize();
