@@ -7,16 +7,32 @@
             html, body {
                 width:100%;
                 height:100%;
+                --scrollbarBG:black;
+                --thumbBG:#282828;
+                overflow:hidden;
             }
-
+            #main::-webkit-scrollbar {
+                width:11px;
+            }
+            #main::-webkit-scrollbar-track {
+                background:var(--scrollbarBG);
+            }
+            #main::-webkit-scrollbar-thumb {
+                background-color:var(--thumbBG) ;
+                border-radius:6px;
+                border:3px solid var(--scrollbarBG);
+            }
+            #main {
+                scrollbar-width:thin;
+                margin-top:50px;
+                scrollbar-color:var(--thumbBG) var(--scrollbarBG);
+            }
             body {
+                scrollbar-width:thin;
+                scrollbar-color:var(--thumbBG) var(--scrollbarBG);
                 background:#282828;
                 color:white;
-                font-family:Helvetica, Verdana;
-                margin:0;
-                margin-top: 60px;
-                padding:0;
-                overflow-x:hidden;
+                font-family:Helvetica,Verdana;
             }
             .header {
                 position: fixed;
@@ -36,13 +52,103 @@
                 margin-bottom:5px;
                 margin-left:20px;
             }
+            .leftwing {
+                float:left;
+            }
+            .leftwing input {
+                -webkit-app-region:no-drag;
+                width:150px;
+                height:20px
+            }
+            .rightwing {
+                float:right;
+                text-align:right;
+                padding-right:10px;
+            }
+            .rightwing * {
+                float:right !important;
+            }
+            .rightwing button {
+                cursor:pointer;
+                -webkit-app-region:no-drag;
+            }
+            .rightwing a, #buttonBar a {
+                cursor:initial;
+            }
+            #window-controls button {
+                width:25px;
+                height:25px;
+            }
+            #window-controls button img {
+                height:15px;
+                width:15px;
+                margin-right:-0.5px;
+                text-align:center;
+            }
+            #drag-region {
+                -webkit-user-select:none;
+                user-select:none;
+                -webkit-app-region:drag;
+            }
+            button {
+                background:#282828;
+                color:white;
+                border:0;
+                height:25px;
+                margin-right:5px;
+                transition:background 0.5s;
+            }
+            button:hover {
+                background:#535353;
+            }
         </style>
         <div id="drag-region" class="header">
-            <h2>blazebury</h2>
+            <div class="leftwing">
+                <h2>blazebury</h2>
+            </div>
+            <div class="rightwing">
+                <div id="window-controls" style="display:none;">
+                    <button draggable="false" id="close-button"><img src="../web/assets/window/close.png"></button>
+                    <button draggable="false" id="restore-button"><img src="../web/assets/window/restore.png"></button>
+                    <button draggable="false" id="max-button"><img src="../web/assets/window/max.png"></button>
+                    <button draggable="false" id="min-button"><img src="../web/assets/window/min.png"></button>
+                </div>
+            </div>
         </div>
-        <div class="preload">
+        <div id="main" class="preload">
             <h2>Please wait...</h2>
             <h3>We are getting things ready for you!</h3>
         </div>
+        <script>
+            const { ipcRenderer } = require("electron");
+            const { ipcMain } = require("electron");
+            const remote = require("electron").remote;
+            win = remote.getCurrentWindow();
+
+            document.getElementById("max-button").style.display = "";
+            document.getElementById("restore-button").style.display = "none";
+
+            document.getElementById("window-controls").style.display = "";
+
+            document.getElementById("min-button").addEventListener("click", event => {
+                win.minimize();
+            });
+
+            document.getElementById("max-button").addEventListener("click", event => {
+                win.maximize();
+                document.getElementById("restore-button").style.display = "";
+                document.getElementById("max-button").style.display = "none";
+            });
+
+            document.getElementById("restore-button").addEventListener("click", event => {
+                win.unmaximize();
+                document.getElementById("restore-button").style.display = "none";
+                document.getElementById("max-button").style.display = "";
+            });
+
+            document.getElementById("close-button").addEventListener("click", event => {
+                win.close();
+            });
+        </script>
     </body>
 </html>

@@ -12,23 +12,23 @@ if (userAgent.indexOf(" electron/") > -1) {
 
     document.getElementById("window-controls").style.display = "";
 
-    document.getElementById('min-button').addEventListener("click", event => {
+    document.getElementById("min-button").addEventListener("click", event => {
         win.minimize();
     });
 
-    document.getElementById('max-button').addEventListener("click", event => {
+    document.getElementById("max-button").addEventListener("click", event => {
         win.maximize();
         document.getElementById("restore-button").style.display = "";
         document.getElementById("max-button").style.display = "none";
     });
 
-    document.getElementById('restore-button').addEventListener("click", event => {
+    document.getElementById("restore-button").addEventListener("click", event => {
         win.unmaximize();
         document.getElementById("restore-button").style.display = "none";
         document.getElementById("max-button").style.display = "";
     });
 
-    document.getElementById('close-button').addEventListener("click", event => {
+    document.getElementById("close-button").addEventListener("click", event => {
         win.close();
     });
 }
