@@ -232,24 +232,17 @@ button:hover {
     overflow-x: hidden;
 }
 
+.blur-on, .blur-off {
+    transition:filter 0.2s;
+} 
+
 .blur-on {
-    -webkit-filter:blur(10px);
-    -moz-filter:blur(10px);
-    -o-filter:blur(10px);
-    -ms-filter:blur(10px);
-    filter:blur(10px);
-    -webkit-transition:all 5s linear;
-    transition:all 5s linear;
-    -moz-transition:all 5s linear;
-    -webkit-transition:all 5s linear;
-    -o-transition:all 5s linear;
+    filter:blur(5px);
+    -webkit-filter:blur(5px);
 }
 
 .blur-off {
     -webkit-filter:blur(0px) !important;
-    -moz-filter:blur(0px) !important;
-    -o-filter:blur(0px) !important;
-    -ms-filter:blur(0px) !important;
     filter:blur(0px) !important;
 }
 
@@ -444,7 +437,6 @@ button:hover {
 
 #about .logo {
     width:25%;
-    height:25%;
     margin-left:1%;
     float:left;
 }
