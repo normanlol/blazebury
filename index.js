@@ -81,161 +81,21 @@ async function renderServer(request, res) {
     var path = u.pathname;
     if (path.substr(0,4) == "/api") {
         var path = path.split("/").slice(1);
-        if (!path[1]) {
-            var j = JSON.stringify({
-                "err": {
-                    "code": "noEndpoint",
-                    "message": "No endpoint was found in your request."
-                }
-            });
-            res.writeHead(404, {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type":"application/json"
-            })
-            res.end(j);
-        } else if (path[1] == "search") {
-            if (u.query.q) {
-                if (config.dataSource == 1) {
-                    deezer.search(u.query.q).then(function(data) {
-                        var j = JSON.stringify({
-                            "results": data,
-                            "source": "deezer"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    })
-                } else if (config.dataSource == 2) {
-                    lastfm.search({q: u.query.q, limit:100}, function(err, data) {
-                        if (err) {
-                            var j = JSON.stringify({
-                                "err": {
-                                    "code": err.code,
-                                    "message": err.message
-                                }
-                            });
-                            res.writeHead(500, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        } else {
+        switch(path[1]) {
+            case "search":
+                if (u.query.q) {
+                    if (config.dataSource == 1) {
+                        deezer.search(u.query.q).then(function(data) {
                             var j = JSON.stringify({
                                 "results": data,
-                                "source": "lastfm"
+                                "source": "deezer"
                             });
                             res.writeHead(200, {
                                 "Access-Control-Allow-Origin": "*",
                                 "Content-Type":"application/json"
                             })
                             res.end(j);
-                        }
-                    })
-                } else if (config.dataSource == 3) {
-                    ytsr(u.query.q+' "music"').then(function(data) {
-                        var j = JSON.stringify({
-                            "results": data,
-                            "source": "youtube"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                            "code": err.code,
-                            "message": err.message
-                          }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    })
-                }
-            } else {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "reqsNotMet",
-                        "message": "A query is required for this endpoint."
-                    }
-                });
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
-                })
-                res.end(j);
-            }
-        } else if (path[1] == "get" && path[2] == "track" && !path[3]) {
-            if (config.dataSource == 1) {
-                if (u.query.id) {
-                    deezer.track(u.query.id).then(function(data) {
-                        var j = JSON.stringify({
-                            data,
-                            "source": "deezer"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    });
-                } else {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": "reqsNotMet",
-                            "message": "A track ID is required for this endpoint."
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                }
-            } else if (config.dataSource == 2) {
-                if (u.query.id && u.query.id.split(":::").length > 1) {
-                    lastfm.trackInfo({artistName: u.query.id.split(":::")[1], name: u.query.id.split(":::")[0]}, function(err, data) {
-                        if (data) {
-                            var j = JSON.stringify({
-                                data,
-                                "source": "lastfm"
-                            });
-                            res.writeHead(200, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        } else {
+                        }).catch(function(err) {
                             var j = JSON.stringify({
                                 "err": {
                                     "code": err.code,
@@ -247,51 +107,63 @@ async function renderServer(request, res) {
                                 "Content-Type":"application/json"
                             })
                             res.end(j);
-                        }
-                    })
-                } else {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": "reqsNotMet",
-                            "message": "A track name and artist name are required for this endpoint."
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                }
-            } else if (config.dataSource == 3) {
-                if (u.query.id) {
-                    ytdl.getInfo(u.query.id).then(function(data) {
-                        var j = JSON.stringify({
-                            data,
-                            "source": "youtube"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
                         })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
+                    } else if (config.dataSource == 2) {
+                        lastfm.search({q: u.query.q, limit:100}, function(err, data) {
+                            if (err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            } else {
+                                var j = JSON.stringify({
+                                    "results": data,
+                                    "source": "lastfm"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }
+                        })
+                    } else if (config.dataSource == 3) {
+                        ytsr(u.query.q+' "music"').then(function(data) {
+                            var j = JSON.stringify({
+                                "results": data,
+                                "source": "youtube"
+                            });
+                            res.writeHead(200, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }).catch(function(err) {
+                            var j = JSON.stringify({
+                                "err": {
                                 "code": err.code,
                                 "message": err.message
                             }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
                         })
-                        res.end(j);
-                    });
+                    }
                 } else {
                     var j = JSON.stringify({
                         "err": {
                             "code": "reqsNotMet",
-                            "message": "A track ID is required for this endpoint."
+                            "message": "A query is required for this endpoint."
                         }
                     });
                     res.writeHead(500, {
@@ -300,76 +172,151 @@ async function renderServer(request, res) {
                     })
                     res.end(j);
                 }
+            return;
 
-            }
-        } else if (path[1] == "get" && path[2] == "track" && path[3] == "stream") {
-            if (u.query.track) {
-                if (!u.query.artist && config.dataSource != 3) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": "reqsNotMet",
-                            "message": "A track name and artist name are required for this endpoint."
+            case "get":
+                if (path[2] == "track" && !path[3]) {
+                    if (config.dataSource == 1) {
+                        if (u.query.id) {
+                            deezer.track(u.query.id).then(function(data) {
+                                var j = JSON.stringify({
+                                    data,
+                                    "source": "deezer"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function(err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            });
+                        } else {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": "reqsNotMet",
+                                    "message": "A track ID is required for this endpoint."
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
                         }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                }
-                var fq;
-                if (config.dataSource != 3) {
-                    fq = '"' + u.query.track.toLowerCase() + '"';
-                    fq = '"' + u.query.artist.toLowerCase() + '"' + fq
-                    fq = fq + ' "auto generated"';
-
-                    ytsr(fq).then(function(data) {
-                        if (data.items[0]) {
-                            if (data.items[0].type == "video") {
-                                if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
-                                    ytdl(data.items[0].url).on("info", function(info) {
-                                        for (var c in info.formats) {
-                                            var i = [];
-                                            if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
-                                                var o = info.formats[c];
-                                                i.push(o);
-                                            }
-                                            if (i.length > 0) {
-                                                var j = JSON.stringify(i);
-                                                res.writeHead(200, {
-                                                    "Access-Control-Allow-Origin": "*",
-                                                    "Content-Type":"application/json"
-                                                })
-                                                res.end(j);
-                                            } else {
-                                                var j = JSON.stringify({
-                                                    "err": {
-                                                        "code": "noFormats",
-                                                        "message": "A valid format could not be found."
-                                                    }
-                                                });
-                                                res.writeHead(500, {
-                                                    "Access-Control-Allow-Origin": "*",
-                                                    "Content-Type":"application/json"
-                                                })
-                                                res.end(j);
-                                            }
-                                        }
-                                    }).on("error",function(err) {
-                                        var j = JSON.stringify({
-                                            "err": {
-                                                "code": err.code,
-                                                "message": err.message
-                                            }
-                                        });
-                                        res.writeHead(500, {
-                                            "Access-Control-Allow-Origin": "*",
-                                            "Content-Type":"application/json"
-                                        })
-                                        res.end(j);
+                    } else if (config.dataSource == 2) {
+                        if (u.query.id && u.query.id.split(":::").length > 1) {
+                            lastfm.trackInfo({artistName: u.query.id.split(":::")[1], name: u.query.id.split(":::")[0]}, function(err, data) {
+                                if (data) {
+                                    var j = JSON.stringify({
+                                        data,
+                                        "source": "lastfm"
                                     });
+                                    res.writeHead(200, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
                                 } else {
-                                    if (data.items[1] && data.items[1].type == "video") {
+                                    var j = JSON.stringify({
+                                        "err": {
+                                            "code": err.code,
+                                            "message": err.message
+                                        }
+                                    });
+                                    res.writeHead(500, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                }
+                            })
+                        } else {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": "reqsNotMet",
+                                    "message": "A track name and artist name are required for this endpoint."
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }
+                    } else if (config.dataSource == 3) {
+                        if (u.query.id) {
+                            ytdl.getInfo(u.query.id).then(function(data) {
+                                var j = JSON.stringify({
+                                    data,
+                                    "source": "youtube"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function(err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            });
+                        } else {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": "reqsNotMet",
+                                    "message": "A track ID is required for this endpoint."
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }
+                    }
+                } else if (path[2] == "track" && path[3] == "stream") {
+                    if (u.query.track) {
+                        if (!u.query.artist && config.dataSource !== 3) {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": "reqsNotMet",
+                                    "message": "A track name and artist name are required for this endpoint."
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }
+                        var fq;
+                        if (config.dataSource != 3) {
+                            fq = '"' + u.query.track.toLowerCase() + '"';
+                            fq = '"' + u.query.artist.toLowerCase() + '"' + fq
+                            fq = fq + ' "auto generated"';
+        
+                            ytsr(fq).then(function(data) {
+                                if (data.items[0]) {
+                                    if (data.items[0].type == "video") {
                                         if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
                                             ytdl(data.items[0].url).on("info", function(info) {
                                                 for (var c in info.formats) {
@@ -413,54 +360,54 @@ async function renderServer(request, res) {
                                                 res.end(j);
                                             });
                                         } else {
-                                            var j = JSON.stringify({
-                                                "err": {
-                                                    "code": "noSources",
-                                                    "message": "A valid source could not be found. If you believe this is in error, check the console."
-                                                }
-                                            });
-                                            res.writeHead(500, {
-                                                "Access-Control-Allow-Origin": "*",
-                                                "Content-Type":"application/json"
-                                            })
-                                            res.end(j);
-                                        }
-                                    } else {
-                                        var j = JSON.stringify({
-                                            "err": {
-                                                "code": "noSources",
-                                                "message": "A valid source could not be found. If you believe this is in error, check the console."
-                                            }
-                                        });
-                                        res.writeHead(500, {
-                                            "Access-Control-Allow-Origin": "*",
-                                            "Content-Type":"application/json"
-                                        })
-                                        res.end(j);
-                                    }
-                                }
-                            } else {
-                                if (data.items[1] && data.items[1].type == "video") {
-                                    if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
-                                        ytdl(data.items[0].url).on("info", function(info) {
-                                            for (var c in info.formats) {
-                                                var i = [];
-                                                if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
-                                                    var o = info.formats[c];
-                                                    i.push(o);
-                                                }
-                                                if (i.length > 0) {
-                                                    var j = JSON.stringify(i);
-                                                    res.writeHead(200, {
-                                                        "Access-Control-Allow-Origin": "*",
-                                                        "Content-Type":"application/json"
-                                                    })
-                                                    res.end(j);
+                                            if (data.items[1] && data.items[1].type == "video") {
+                                                if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
+                                                    ytdl(data.items[0].url).on("info", function(info) {
+                                                        for (var c in info.formats) {
+                                                            var i = [];
+                                                            if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                                                                var o = info.formats[c];
+                                                                i.push(o);
+                                                            }
+                                                            if (i.length > 0) {
+                                                                var j = JSON.stringify(i);
+                                                                res.writeHead(200, {
+                                                                    "Access-Control-Allow-Origin": "*",
+                                                                    "Content-Type":"application/json"
+                                                                })
+                                                                res.end(j);
+                                                            } else {
+                                                                var j = JSON.stringify({
+                                                                    "err": {
+                                                                        "code": "noFormats",
+                                                                        "message": "A valid format could not be found."
+                                                                    }
+                                                                });
+                                                                res.writeHead(500, {
+                                                                    "Access-Control-Allow-Origin": "*",
+                                                                    "Content-Type":"application/json"
+                                                                })
+                                                                res.end(j);
+                                                            }
+                                                        }
+                                                    }).on("error",function(err) {
+                                                        var j = JSON.stringify({
+                                                            "err": {
+                                                                "code": err.code,
+                                                                "message": err.message
+                                                            }
+                                                        });
+                                                        res.writeHead(500, {
+                                                            "Access-Control-Allow-Origin": "*",
+                                                            "Content-Type":"application/json"
+                                                        })
+                                                        res.end(j);
+                                                    });
                                                 } else {
                                                     var j = JSON.stringify({
                                                         "err": {
-                                                            "code": "noFormats",
-                                                            "message": "A valid format could not be found."
+                                                            "code": "noSources",
+                                                            "message": "A valid source could not be found. If you believe this is in error, check the console."
                                                         }
                                                     });
                                                     res.writeHead(500, {
@@ -469,25 +416,125 @@ async function renderServer(request, res) {
                                                     })
                                                     res.end(j);
                                                 }
+                                            } else {
+                                                var j = JSON.stringify({
+                                                    "err": {
+                                                        "code": "noSources",
+                                                        "message": "A valid source could not be found. If you believe this is in error, check the console."
+                                                    }
+                                                });
+                                                res.writeHead(500, {
+                                                    "Access-Control-Allow-Origin": "*",
+                                                    "Content-Type":"application/json"
+                                                })
+                                                res.end(j);
                                             }
-                                        }).on("error",function(err) {
-                                            var j = JSON.stringify({
-                                                "err": {
-                                                    "code": err.code,
-                                                    "message": err.message
-                                                }
-                                            });
-                                            res.writeHead(500, {
-                                                "Access-Control-Allow-Origin": "*",
-                                                "Content-Type":"application/json"
-                                            })
-                                            res.end(j);
-                                        });
+                                        }
+                                    } else {
+                                        if (data.items[1] && data.items[1].type == "video") {
+                                            if (u.query.track.toLowerCase() == data.items[0].title.toLowerCase()) {
+                                                ytdl(data.items[0].url).on("info", function(info) {
+                                                    for (var c in info.formats) {
+                                                        var i = [];
+                                                        if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                                                            var o = info.formats[c];
+                                                            i.push(o);
+                                                        }
+                                                        if (i.length > 0) {
+                                                            var j = JSON.stringify(i);
+                                                            res.writeHead(200, {
+                                                                "Access-Control-Allow-Origin": "*",
+                                                                "Content-Type":"application/json"
+                                                            })
+                                                            res.end(j);
+                                                        } else {
+                                                            var j = JSON.stringify({
+                                                                "err": {
+                                                                    "code": "noFormats",
+                                                                    "message": "A valid format could not be found."
+                                                                }
+                                                            });
+                                                            res.writeHead(500, {
+                                                                "Access-Control-Allow-Origin": "*",
+                                                                "Content-Type":"application/json"
+                                                            })
+                                                            res.end(j);
+                                                        }
+                                                    }
+                                                }).on("error",function(err) {
+                                                    var j = JSON.stringify({
+                                                        "err": {
+                                                            "code": err.code,
+                                                            "message": err.message
+                                                        }
+                                                    });
+                                                    res.writeHead(500, {
+                                                        "Access-Control-Allow-Origin": "*",
+                                                        "Content-Type":"application/json"
+                                                    })
+                                                    res.end(j);
+                                                });
+                                            } else {
+                                                var j = JSON.stringify({
+                                                    "err": {
+                                                        "code": "noSources",
+                                                        "message": "A valid source could not be found. If you believe this is in error, check the console."
+                                                    }
+                                                });
+                                                res.writeHead(500, {
+                                                    "Access-Control-Allow-Origin": "*",
+                                                    "Content-Type":"application/json"
+                                                })
+                                                res.end(j);
+                                            }
+                                        }
+                                    }
+                            } else {
+                                    var j = JSON.stringify({
+                                        "err": {
+                                            "code": "noSources",
+                                            "message": "A valid source could not be found. If you believe this is in error, check the console."
+                                        }
+                                    });
+                                    res.writeHead(500, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                }
+                            }).catch(function(err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            })
+                        } else {
+                            ytdl(u.query.track).on("info", function(info) {
+                                for (var c in info.formats) {
+                                    var i = [];
+                                    if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
+                                        var o = info.formats[c];
+                                        i.push(o);
+                                    }
+                                    if (i.length > 0) {
+                                        var j = JSON.stringify(i);
+                                        res.writeHead(200, {
+                                            "Access-Control-Allow-Origin": "*",
+                                            "Content-Type":"application/json"
+                                        })
+                                        res.end(j);
                                     } else {
                                         var j = JSON.stringify({
                                             "err": {
-                                                "code": "noSources",
-                                                "message": "A valid source could not be found. If you believe this is in error, check the console."
+                                                "code": "noFormats",
+                                                "message": "A valid format could not be found."
                                             }
                                         });
                                         res.writeHead(500, {
@@ -497,53 +544,11 @@ async function renderServer(request, res) {
                                         res.end(j);
                                     }
                                 }
-                            }
-                    } else {
-                            var j = JSON.stringify({
-                                "err": {
-                                    "code": "noSources",
-                                    "message": "A valid source could not be found. If you believe this is in error, check the console."
-                                }
-                            });
-                            res.writeHead(500, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        }
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    })
-                } else {
-                    ytdl(u.query.track).on("info", function(info) {
-                        for (var c in info.formats) {
-                            var i = [];
-                            if (info.formats[c].audioQuality && !info.formats[c].isHLS && !info.formats[c].isDashMPD) {
-                                var o = info.formats[c];
-                                i.push(o);
-                            }
-                            if (i.length > 0) {
-                                var j = JSON.stringify(i);
-                                res.writeHead(200, {
-                                    "Access-Control-Allow-Origin": "*",
-                                    "Content-Type":"application/json"
-                                })
-                                res.end(j);
-                            } else {
+                            }).on("error",function(err) {
                                 var j = JSON.stringify({
                                     "err": {
-                                        "code": "noFormats",
-                                        "message": "A valid format could not be found."
+                                        "code": err.code,
+                                        "message": err.message
                                     }
                                 });
                                 res.writeHead(500, {
@@ -551,220 +556,34 @@ async function renderServer(request, res) {
                                     "Content-Type":"application/json"
                                 })
                                 res.end(j);
-                            }
+                            });
                         }
-                    }).on("error",function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    });
-                }
-            } else {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "reqsNotMet",
-                        "message": "A track name and artist name are required for this endpoint."
-                    }
-                });
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
-                });
-                res.end(j);
-            }
-        } else if (path[1] == "get" && path[2] == "trending") {
-            if (config.dataSource == 1) {
-                deezer.chart.tracks(50).then(function(data) {
-                    var j = JSON.stringify({
-                        data,
-                        "source": "deezer"
-                    });
-                    res.writeHead(200, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                }).catch(function(err) {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": err.code,
-                            "message": err.message
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                });
-            } else if (config.dataSource == 2) {
-                lastfm.chartTopTracks({limit:"50"}, function(err, data) {
-                    if (data) {
-                        var j = JSON.stringify({
-                            data,
-                            "source": "lastfm"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
                     } else {
                         var j = JSON.stringify({
                             "err": {
-                                "code": err.code,
-                                "message": err.message
+                                "code": "reqsNotMet",
+                                "message": "A track name and artist name are required for this endpoint."
                             }
                         });
                         res.writeHead(500, {
                             "Access-Control-Allow-Origin": "*",
                             "Content-Type":"application/json"
-                        })
+                        });
                         res.end(j);
                     }
-                })
-            } else if (config.dataSource == 3) {
-                ytpl('RDCLAK5uy_k5n4srrEB1wgvIjPNTXS9G1ufE9WQxhnA').then((response) => {
-                    var j = JSON.stringify({
-                        "data": response,
-                        "source": "youtube"
-                    });
-                    res.writeHead(200, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                }).catch((err) => {
-                    var j = JSON.stringify({
-                        "err": {
-                            "code": err.code,
-                            "message": err.message
-                        }
-                    });
-                    res.writeHead(500, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(j);
-                })
-            }
-        } else if (path[1] == "config") {
-            var t = fs.readFileSync("config.json").toString();
-            res.writeHead(200, {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type":"application/json"
-            })
-            res.end(t);
-        } else if (path[1] == "editConfig") {
-            var j = JSON.parse(fs.readFileSync("config.json"));
-            console.log(u)
-            if (u.query.lastFmKey) {j.lastFmKey = u.query.lastFmKey;}
-            if (u.query.dataSource) {j.dataSource = u.query.dataSource;}
-            if (u.query.discordRpc) {j.discordRpc = u.query.discordRpc;}
-            if (u.query.discordRpcId) {j.discordRpcId = u.query.discordRpcId;}
-            if (u.query.onClosePref) {j.onClosePref = u.query.onClosePref;}
-            fs.writeFileSync("config.json", JSON.stringify(j));
-            res.end();
-            app.relaunch();
-            app.exit();
-
-        } else if (path[1] == "setPresence") {
-            if (config.discordRpc == "true") {
-                var act = u.query.act;
-                var title = u.query.title;
-                var artist = u.query.artist;
-                if (act == "play") {
-                    drpc.updatePresence({
-                        state: artist,
-                        details: title,
-                        startTimestamp: Date.now(),
-                        largeImageKey: 'blazebury',
-                        instance: false
-                    })
-                    var d = JSON.stringify({
-                        "success": true
-                    });
-                    res.writeHead(200, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(d);
-                } else if (act == "pause" || !act) {
-                    drpc.updatePresence({
-                        state: artist,
-                        details: title + " (Paused)",
-                        largeImageKey: 'blazebury',
-                        instance: false
-                    })
-                    var d = JSON.stringify({
-                        "success": true
-                    });
-                    res.writeHead(200, {
-                        "Access-Control-Allow-Origin": "*",
-                        "Content-Type":"application/json"
-                    })
-                    res.end(d);
-                }
-            } else {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "notAllowed",
-                        "message": "Due to a user's settings, this endpoint is not allowed."
-                    }
-                });
-                res.writeHead(403, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
-                })
-                res.end(j);
-            }
-        } else if (path[1] == "get" && path[2] == "artist" && !path[3]) {
-            if (u.query.id) {
-                if (config.dataSource == 1) {
-                    deezer.artist(u.query.id).then(function(data) {
-                        var j = JSON.stringify({
-                            data,
-                            "source": "deezer"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    });
-                } else if (config.dataSource == 2) {
-                    lastfm.artistInfo({ name:u.query.id, autocorrect:1 }, function(err, data) {
-                        if (data) {
+                } else if (path[2] == "trending") {
+                    if (config.dataSource == 1) {
+                        deezer.chart.tracks(50).then(function(data) {
                             var j = JSON.stringify({
                                 data,
-                                "source": "lastfm"
+                                "source": "deezer"
                             });
                             res.writeHead(200, {
                                 "Access-Control-Allow-Origin": "*",
                                 "Content-Type":"application/json"
                             })
                             res.end(j);
-                        } else {
+                        }).catch(function(err) {
                             var j = JSON.stringify({
                                 "err": {
                                     "code": err.code,
@@ -776,188 +595,9 @@ async function renderServer(request, res) {
                                 "Content-Type":"application/json"
                             })
                             res.end(j);
-                        }
-                    })
-                } else if (config.dataSource == 3) {
-                    ytch.getChannelInfo(u.query.id).then((channelinfo) => {
-
-                        ytch.getChannelPlaylistInfo(u.query.id, 'popular').then((response) => {
-                            let sortBy = 'popular'
-                            if (u.query.sort!=undefined) {
-                              sortBy = u.query.sort
-                            }
-                            var j = JSON.stringify({
-                                "data": {"info": channelinfo, "playlists": response},
-                                "source": "youtube"
-                            });
-                            res.writeHead(200, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        }).catch((err) => {
-                            var j = JSON.stringify({
-                                "err": {
-                                    "code": err.code,
-                                    "message": err.message
-                                }
-                            });
-                            res.writeHead(500, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        })
-
-
-
-                    }).catch((err) => {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
                         });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    })
-                }
-            } else {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "reqsNotMet",
-                        "message": "A track name and artist name are required for this endpoint."
-                    }
-                });
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
-                })
-                res.end(j);
-            }
-        } else if (path[1] == "get" && path[2] == "artist" && path[3] == "albums") {
-            if (u.query.id) {
-                if (config.dataSource == 1) {
-                    deezer.artist.albums(u.query.id, 100).then(function(data) {
-                        var j = JSON.stringify({
-                            "data": data,
-                            "source": "deezer"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    });
-                } else if (config.dataSource == 2) {
-                    lastfm.artistTopAlbums({ name:u.query.id, autocorrect:1 }, function(err, data) {
-                        if (data) {
-                            var j = JSON.stringify({
-                                data,
-                                "source": "lastfm"
-                            });
-                            res.writeHead(200, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        } else {
-                            var j = JSON.stringify({
-                                "err": {
-                                    "code": err.code,
-                                    "message": err.message
-                                }
-                            });
-                            res.writeHead(500, {
-                                "Access-Control-Allow-Origin": "*",
-                                "Content-Type":"application/json"
-                            })
-                            res.end(j);
-                        }
-                    })
-                } else if (config.dataSource == 3) {
-                    ytch.getChannelPlaylistInfo(u.query.id, 'popular').then((response) => {
-                        var j = JSON.stringify({
-                            "data": response,
-                            "source": "youtube"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch((err) => {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    })
-
-                }
-            } else {
-                var j = JSON.stringify({
-                    "err": {
-                        "code": "reqsNotMet",
-                        "message": "An arist name id is required for this endpoint."
-                    }
-                });
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"application/json"
-                })
-                res.end(j);
-            }
-        } else if (path[1] == "get" && path[2] == "album") {
-            if (u.query.id) {
-                if (config.dataSource == 1) {
-                    deezer.album(u.query.id, 100).then(function(data) {
-                        var j = JSON.stringify({
-                            "data": data,
-                            "source": "deezer"
-                        });
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    }).catch(function(err) {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
-                        });
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"application/json"
-                        })
-                        res.end(j);
-                    });
-                } else if (config.dataSource == 2) {
-                    if (u.query.id && u.query.id.split(":::").length > 1) {
-                        lastfm.albumInfo({ name:u.query.id.split(":::")[0], artistName: u.query.id.split(":::")[1], autocorrect:1 }, function(err, data) {
+                    } else if (config.dataSource == 2) {
+                        lastfm.chartTopTracks({limit:"50"}, function(err, data) {
                             if (data) {
                                 var j = JSON.stringify({
                                     data,
@@ -982,6 +622,323 @@ async function renderServer(request, res) {
                                 res.end(j);
                             }
                         })
+                    } else if (config.dataSource == 3) {
+                        ytpl('RDCLAK5uy_k5n4srrEB1wgvIjPNTXS9G1ufE9WQxhnA').then((response) => {
+                            var j = JSON.stringify({
+                                "data": response,
+                                "source": "youtube"
+                            });
+                            res.writeHead(200, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        }).catch((err) => {
+                            var j = JSON.stringify({
+                                "err": {
+                                    "code": err.code,
+                                    "message": err.message
+                                }
+                            });
+                            res.writeHead(500, {
+                                "Access-Control-Allow-Origin": "*",
+                                "Content-Type":"application/json"
+                            })
+                            res.end(j);
+                        })
+                    }
+                } else if (path[2] == "artist" && !path[3]) {
+                    if (u.query.id) {
+                        if (config.dataSource == 1) {
+                            deezer.artist(u.query.id).then(function(data) {
+                                var j = JSON.stringify({
+                                    data,
+                                    "source": "deezer"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function(err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            });
+                        } else if (config.dataSource == 2) {
+                            lastfm.artistInfo({ name:u.query.id, autocorrect:1 }, function(err, data) {
+                                if (data) {
+                                    var j = JSON.stringify({
+                                        data,
+                                        "source": "lastfm"
+                                    });
+                                    res.writeHead(200, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                } else {
+                                    var j = JSON.stringify({
+                                        "err": {
+                                            "code": err.code,
+                                            "message": err.message
+                                        }
+                                    });
+                                    res.writeHead(500, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                }
+                            })
+                        } else if (config.dataSource == 3) {
+                            ytch.getChannelInfo(u.query.id).then(function(channelinfo) {
+                                ytch.getChannelPlaylistInfo(u.query.id, 'popular').then(function(response) {
+                                    var sortBy = "popular";
+                                    if (u.query.sort !== undefined) {
+                                        sortBy = u.query.sort;
+                                    }
+                                    var j = JSON.stringify({
+                                        "data": {
+                                            "info": channelinfo, 
+                                            "playlists": response
+                                        },
+                                        "source": "youtube"
+                                    });
+                                    res.writeHead(200, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                }).catch(function (err) {
+                                    var j = JSON.stringify({
+                                        "err": {
+                                            "code": err.code,
+                                            "message": err.message
+                                        }
+                                    });
+                                    res.writeHead(500, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                })
+                            }).catch(function (err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            })
+                        }
+                    } else {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": "reqsNotMet",
+                                "message": "An arist ID is required for this endpoint."
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }
+                } else if (path[2] == "artist" && path[3] == "albums") {
+                    if (u.query.id) {
+                        if (config.dataSource == 1) {
+                            deezer.artist.albums(u.query.id, 100).then(function(data) {
+                                var j = JSON.stringify({
+                                    "data": data,
+                                    "source": "deezer"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function(err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            });
+                        } else if (config.dataSource == 2) {
+                            lastfm.artistTopAlbums({ name:u.query.id, autocorrect:1 }, function(err, data) {
+                                if (data) {
+                                    var j = JSON.stringify({
+                                        data,
+                                        "source": "lastfm"
+                                    });
+                                    res.writeHead(200, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                } else {
+                                    var j = JSON.stringify({
+                                        "err": {
+                                            "code": err.code,
+                                            "message": err.message
+                                        }
+                                    });
+                                    res.writeHead(500, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                }
+                            })
+                        } else if (config.dataSource == 3) {
+                            ytch.getChannelPlaylistInfo(u.query.id, "popular").then(function(response) {
+                                var j = JSON.stringify({
+                                    "data": response,
+                                    "source": "youtube"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function (err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            })
+                        }
+                    } else {
+                        var j = JSON.stringify({
+                            "err": {
+                                "code": "reqsNotMet",
+                                "message": "An arist ID is required for this endpoint."
+                            }
+                        });
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"application/json"
+                        })
+                        res.end(j);
+                    }
+                } else if (path[2] == "album") {
+                    if (u.query.id) {
+                        if (config.dataSource == 1) {
+                            deezer.album(u.query.id, 100).then(function(data) {
+                                var j = JSON.stringify({
+                                    "data": data,
+                                    "source": "deezer"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function(err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            });
+                        } else if (config.dataSource == 2) {
+                            if (u.query.id && u.query.id.split(":::").length > 1) {
+                                lastfm.albumInfo({ name:u.query.id.split(":::")[0], artistName: u.query.id.split(":::")[1], autocorrect:1 }, function(err, data) {
+                                    if (data) {
+                                        var j = JSON.stringify({
+                                            data,
+                                            "source": "lastfm"
+                                        });
+                                        res.writeHead(200, {
+                                            "Access-Control-Allow-Origin": "*",
+                                            "Content-Type":"application/json"
+                                        })
+                                        res.end(j);
+                                    } else {
+                                        var j = JSON.stringify({
+                                            "err": {
+                                                "code": err.code,
+                                                "message": err.message
+                                            }
+                                        });
+                                        res.writeHead(500, {
+                                            "Access-Control-Allow-Origin": "*",
+                                            "Content-Type":"application/json"
+                                        })
+                                        res.end(j);
+                                    }
+                                })
+                            } else {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": "reqsNotMet",
+                                        "message": "An album ID required for this endpoint."
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }
+                        } else if (config.dataSource == 3) {
+                            ytpl(u.query.id).then(function (response) {
+                                var j = JSON.stringify({
+                                    "data": response,
+                                    "source": "youtube"
+                                });
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            }).catch(function (err) {
+                                var j = JSON.stringify({
+                                    "err": {
+                                        "code": err.code,
+                                        "message": err.message
+                                    }
+                                });
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"application/json"
+                                })
+                                res.end(j);
+                            })
+                        }
                     } else {
                         var j = JSON.stringify({
                             "err": {
@@ -995,85 +952,137 @@ async function renderServer(request, res) {
                         })
                         res.end(j);
                     }
-                } else if (config.dataSource == 3) {
-                    ytpl(u.query.id).then((response) => {
-                        var j = JSON.stringify({
-                            "data": response,
-                            "source": "youtube"
+                } else if (path[2] == "lyrics") {
+                    if (u.query.artist && u.query.title) {
+                        ftl.find(u.query.artist, u.query.title, function(err, resp) {
+                            if (!err) {
+                                if (resp == "" || resp == null) {
+                                    resp = "Could not find lyrics for this track."
+                                }
+                                res.writeHead(200, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"text/plain"
+                                })
+        
+                                res.end(resp);
+                            } else {
+                                res.writeHead(500, {
+                                    "Access-Control-Allow-Origin": "*",
+                                    "Content-Type":"text/plain"
+                                })
+                                res.end(err.stack);
+                            }
+                        })
+                    } else {
+                        var resp = "This endpoint requires an 'artist' and 'title' parameter."
+                        res.writeHead(500, {
+                            "Access-Control-Allow-Origin": "*",
+                            "Content-Type":"text/plain"
+                        })
+                        res.end(resp);
+                    }
+                } else {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "noEndpoint",
+                            "message": "Invalid 'get' parameter."
+                        }
+                    });
+                    res.writeHead(404, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
+                    })
+                    res.end(j);
+                }
+            return;
+                
+            case "config": 
+                var t = fs.readFileSync("config.json").toString();
+                res.writeHead(200, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type":"application/json"
+                })
+                res.end(t);
+            return;
+
+            case "editConfig":
+                var j = JSON.parse(fs.readFileSync("config.json"));
+                if (u.query.lastFmKey) {j.lastFmKey = u.query.lastFmKey;}
+                if (u.query.dataSource) {j.dataSource = u.query.dataSource;}
+                if (u.query.discordRpc) {j.discordRpc = u.query.discordRpc;}
+                if (u.query.discordRpcId) {j.discordRpcId = u.query.discordRpcId;}
+                if (u.query.onClosePref) {j.onClosePref = u.query.onClosePref;}
+                fs.writeFileSync("config.json", JSON.stringify(j));
+                res.end();
+                app.relaunch();
+                app.exit();
+            return;
+
+            case "setPresence":
+                if (config.discordRpc == "true") {
+                    var act = u.query.act;
+                    var title = u.query.title;
+                    var artist = u.query.artist;
+                    if (act == "play") {
+                        drpc.updatePresence({
+                            state: artist,
+                            details: title,
+                            startTimestamp: Date.now(),
+                            largeImageKey: 'blazebury',
+                            instance: false
+                        })
+                        var d = JSON.stringify({
+                            "success": true
                         });
                         res.writeHead(200, {
                             "Access-Control-Allow-Origin": "*",
                             "Content-Type":"application/json"
                         })
-                        res.end(j);
-                    }).catch((err) => {
-                        var j = JSON.stringify({
-                            "err": {
-                                "code": err.code,
-                                "message": err.message
-                            }
+                        res.end(d);
+                    } else if (act == "pause" || !act) {
+                        drpc.updatePresence({
+                            state: artist,
+                            details: title + " (Paused)",
+                            largeImageKey: 'blazebury',
+                            instance: false
+                        })
+                        var d = JSON.stringify({
+                            "success": true
                         });
-                        res.writeHead(500, {
+                        res.writeHead(200, {
                             "Access-Control-Allow-Origin": "*",
                             "Content-Type":"application/json"
                         })
-                        res.end(j);
+                        res.end(d);
+                    }
+                } else {
+                    var j = JSON.stringify({
+                        "err": {
+                            "code": "notAllowed",
+                            "message": "Due to a user's settings, this endpoint is not allowed."
+                        }
+                    });
+                    res.writeHead(403, {
+                        "Access-Control-Allow-Origin": "*",
+                        "Content-Type":"application/json"
                     })
+                    res.end(j);
                 }
-            } else {
+            return;
+
+            default:
                 var j = JSON.stringify({
                     "err": {
-                        "code": "reqsNotMet",
-                        "message": "A track name and artist name are required for this endpoint."
+                        "code": "noEndpoint",
+                        "message": "No endpoint was found in your request."
                     }
                 });
-                res.writeHead(500, {
+                res.writeHead(404, {
                     "Access-Control-Allow-Origin": "*",
                     "Content-Type":"application/json"
                 })
                 res.end(j);
-            }
-        } else if (path[1] == "get" && path[2] == "lyrics") {
-            if (u.query.artist && u.query.title) {
-                ftl.find(u.query.artist, u.query.title, function(err, resp) {
-                    if (!err) {
-                        if (resp==""||resp==null) {
-                          resp = "Could not find lyrics for this track."
-                        }
-                        res.writeHead(200, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"text/plain"
-                        })
-
-                        res.end(resp);
-                    } else {
-                        res.writeHead(500, {
-                            "Access-Control-Allow-Origin": "*",
-                            "Content-Type":"text/plain"
-                        })
-                        res.end(err.stack);
-                    }
-                })
-            } else {
-                var resp = "This endpoint requires an 'artist' and 'title' parameter."
-                res.writeHead(500, {
-                    "Access-Control-Allow-Origin": "*",
-                    "Content-Type":"text/plain"
-                })
-                res.end(resp);
-            }
-        } else {
-            var j = JSON.stringify({
-                "err": {
-                    "code": "notExist",
-                    "message": "This endpoint was removed or does not exist."
-                }
-            });
-            res.writeHead(500, {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type":"application/json"
-            })
-            res.end(j);
+            return;
         }
     } else {
         fs.readFile("./web" + path, function(err,resp) {
