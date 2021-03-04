@@ -524,26 +524,26 @@ async function renderServer(request, res) {
                                         var o = info.formats[c];
                                         i.push(o);
                                     }
-                                    if (i.length > 0) {
-                                        var j = JSON.stringify(i);
-                                        res.writeHead(200, {
-                                            "Access-Control-Allow-Origin": "*",
-                                            "Content-Type":"application/json"
-                                        })
-                                        res.end(j);
-                                    } else {
-                                        var j = JSON.stringify({
-                                            "err": {
-                                                "code": "noFormats",
-                                                "message": "A valid format could not be found."
-                                            }
-                                        });
-                                        res.writeHead(500, {
-                                            "Access-Control-Allow-Origin": "*",
-                                            "Content-Type":"application/json"
-                                        })
-                                        res.end(j);
-                                    }
+                                }
+                                if (i.length > 0) {
+                                    var j = JSON.stringify(i);
+                                    res.writeHead(200, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
+                                } else {
+                                    var j = JSON.stringify({
+                                        "err": {
+                                            "code": "noFormats",
+                                            "message": "A valid format could not be found."
+                                        }
+                                    });
+                                    res.writeHead(500, {
+                                        "Access-Control-Allow-Origin": "*",
+                                        "Content-Type":"application/json"
+                                    })
+                                    res.end(j);
                                 }
                             }).on("error",function(err) {
                                 var j = JSON.stringify({
