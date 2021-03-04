@@ -23,6 +23,7 @@ if (config.lastFmKey == "") {
 } else {
     var lfmKey = config.lastFmKey;
 }
+config.dataSource = parseInt(config.dataSource);
 const LastFM = require("last-fm");
 const lastfm = new LastFM(lfmKey, { userAgent: "BlazeburyMusic/0.2.0", minArtistListeners: 50, minTrackListeners: 100 });
 const DeezerPublicApi = require('deezer-public-api');
@@ -309,7 +310,7 @@ async function renderServer(request, res) {
                             res.end(j);
                         }
                         var fq;
-                        if (config.dataSource != 3) {
+                        if (config.dataSource !== 3) {
                             fq = '"' + u.query.track.toLowerCase() + '"';
                             fq = '"' + u.query.artist.toLowerCase() + '"' + fq
                             fq = fq + ' "auto generated"';

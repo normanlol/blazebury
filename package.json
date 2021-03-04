@@ -31,13 +31,13 @@
     "soundcloud-downloader": "^0.2.4",
     "soundcloud-key-fetch": "^1.0.11",
     "soundcloud-searcher": "^0.3.1",
-    "yt-channel-info": "^1.2.2",
+    "yt-channel-info": "^1.3.0",
     "ytdl-core": "^4.5.0",
     "ytpl": "^2.0.5",
     "ytsr": "^3.3.1"
   },
   "devDependencies": {
-    "electron": "^11.3.0"
+    "electron": "^12.0.0"
   },
   "directories": {
     "doc": "docs"

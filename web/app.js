@@ -131,26 +131,58 @@ document.getElementById("actualPlayer").addEventListener("error", function(error
     var artist = document.getElementById("artistName").innerHTML;
     var track = document.getElementById("trackName").innerHTML;
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/get/track/stream?artist=" + artist + "&track=" + track)
+    xhr.open("/api/config")
     xhr.send();
     xhr.onload = function () {
-        var json = JSON.parse(xhr.responseText);
-        if (!json.err) {
-            document.getElementById("actualPlayer").src = json[0].url;
-            if (localStorage.getItem("queue")) {
-                var q = JSON.parse(localStorage.getItem("queue"));
-                var pos = parseInt(localStorage.getItem("queuePosition"));
-                q[pos].url = json[0].url;
-                q = JSON.stringify(q);
-                localStorage.setItem("queue", q);
+        var config = JSON.parse(xhr.responseText);
+        if (config.dataSource !== "3" && config.dataSource !== 3) {
+            xhr.open("GET", "/api/get/track/stream?artist=" + artist + "&track=" + track)
+            xhr.send();
+            xhr.onload = function () {
+                var json = JSON.parse(xhr.responseText);
+                if (!json.err) {
+                    document.getElementById("actualPlayer").src = json[0].url;
+                    if (localStorage.getItem("queue")) {
+                        var q = JSON.parse(localStorage.getItem("queue"));
+                        var pos = parseInt(localStorage.getItem("queuePosition"));
+                        q[pos].url = json[0].url;
+                        q = JSON.stringify(q);
+                        localStorage.setItem("queue", q);
+                    }
+                    document.getElementById("progress").innerHTML = "Loading stream data...";
+                    document.getElementById("actualPlayer").play();
+                } else {
+                    document.getElementById("progress").innerHTML = "Could not get song.";
+                    if (localStorage.getItem("queue")) {
+                        goToNext();
+                        removeFromQueue(parseInt(localStorage.getItem("queuePosition")));
+                    }
+                }
             }
-            document.getElementById("progress").innerHTML = "Loading stream data...";
-            document.getElementById("actualPlayer").play();
         } else {
-            document.getElementById("progress").innerHTML = "Could not get song.";
-            if (localStorage.getItem("queue")) {
-                goToNext();
-                removeFromQueue(parseInt(localStorage.getItem("queuePosition")));
+            var id = document.getElementById("player").getAttribute("playing-id").split(":::")[0];
+            xhr.open("GET", "/api/get/track/stream?track=" + id);
+            xhr.send();
+            xhr.onload = function () {
+                var json = JSON.parse(xhr.responseText);
+                if (!json.err) {
+                    document.getElementById("actualPlayer").src = json[0].url;
+                    if (localStorage.getItem("queue")) {
+                        var q = JSON.parse(localStorage.getItem("queue"));
+                        var pos = parseInt(localStorage.getItem("queuePosition"));
+                        q[pos].url = json[0].url;
+                        q = JSON.stringify(q);
+                        localStorage.setItem("queue", q);
+                    }
+                    document.getElementById("progress").innerHTML = "Loading stream data...";
+                    document.getElementById("actualPlayer").play();
+                } else {
+                    document.getElementById("progress").innerHTML = "Could not get song.";
+                    if (localStorage.getItem("queue")) {
+                        goToNext();
+                        removeFromQueue(parseInt(localStorage.getItem("queuePosition")));
+                    }
+                }
             }
         }
     }
@@ -1001,7 +1033,7 @@ function addToQueue(id) {
                 }
             } else if (json.source == "youtube") {
                 if (!document.getElementById("player").getAttribute("playing-id")) {
-                    if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails - 1].url;} else {var cover = "icon.png"}
+                    if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url;} else {var cover = "icon.png"}
                     document.getElementById("cover").src = cover;
                     document.getElementById("artistLink").href = "#artist#" + json.data.videoDetails.externalChannelId;
                     document.getElementById("artistName").innerHTML = json.data.videoDetails.ownerChannelName;
@@ -1023,7 +1055,7 @@ function addToQueue(id) {
                     ]
                     localStorage.setItem("queue", JSON.stringify(j));
                     document.getElementById("progress").innerHTML = "Getting stream URL...";
-                    xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artistName) + "&track=" + encodeURIComponent(json.data.name));
+                    xhr.open("GET", "/api/get/track/stream?track=" + encodeURIComponent(json.data.videoDetails.videoId));
                     xhr.send();
                     xhr.onload = function() {
                         document.getElementById("progress").innerHTML = "Loading stream data...";
@@ -1064,7 +1096,6 @@ function addToQueue(id) {
                         localStorage.setItem("queue", q);
                     }
                 }
-                // HAHAHAH
             }
         }
     } else {
@@ -1122,20 +1153,20 @@ function addToQueue(id) {
             } else if (json.source == "youtube") {
                 var q = JSON.parse(localStorage.getItem("queue"));
                 var ni = {
-                    "cover":json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails-1].url,
+                    "cover": json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url,
                     "artist": {
-                        "link": "#artist#" + json.data.artist.id,
-                        "name": json.data.artist.name,
+                        "link": "#artist#" + json.data.videoDetails.externalChannelId,
+                        "name": json.data.videoDetails.ownerChannelName,
                     },
                     "track": {
-                        "name": json.data.title,
-                        "link": "#album#" + json.data.album.id + "#track#" + json.data.id,
-                        "id": json.data.id
+                        "name": json.data.videoDetails.title,
+                        "link": "#track#" + json.data.videoDetails.videoId + ":::" + json.data.videoDetails.externalChannelId,
+                        "id": json.data.videoDetails.videoId + ":::" + json.data.videoDetails.externalChannelId
                     }
                 }
                 q.push(ni);
                 localStorage.setItem("queue", JSON.stringify(q));
-                xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artist.name) + "&track=" + encodeURIComponent(json.data.title));
+                xhr.open("GET", "/api/get/track/stream?track=" + encodeURIComponent(json.data.videoDetails.videoId));
                 xhr.send();
                 xhr.onload = function() {
                     var j2 = JSON.parse(xhr.responseText);
@@ -1194,16 +1225,36 @@ function checkQueue() {
                 document.getElementById("loading").style.display = "";
                 document.getElementById("progress").innerHTML = "Getting stream URL..."
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(json.data.artist.name) + "&track=" + encodeURIComponent(json.data.title));
+                xhr.open("GET", "/api/config");
                 xhr.send();
-                xhr.onload = function() {
-                    document.getElementById("progress").innerHTML = "Loading stream data...";
-                    var json = JSON.parse(xhr.responseText);
-                    document.getElementById("actualPlayer").src = json[0].url;
-                    var q = JSON.parse(localStorage.getItem("queue"));
-                    q[0].url = json[0].url;
-                    localStorage.setItem("queue", JSON.stringify(q));
-                    showQC();
+                xhr.onload = function () {
+                    var config = JSON.parse(xhr.responseText);
+                    if (config.dataSource !== "3" && config.dataSource !== 3) {
+                        xhr.open("GET", "/api/get/track/stream?artist=" + encodeURIComponent(q[pos].artist.name) + "&track=" + encodeURIComponent(q[pos].track.name));
+                        xhr.send();
+                        xhr.onload = function() {
+                            document.getElementById("progress").innerHTML = "Loading stream data...";
+                            var json = JSON.parse(xhr.responseText);
+                            document.getElementById("actualPlayer").src = json[0].url;
+                            var q = JSON.parse(localStorage.getItem("queue"));
+                            q[0].url = json[0].url;
+                            localStorage.setItem("queue", JSON.stringify(q));
+                            showQC();
+                        }
+                    } else {
+                        var id = q[pos].track.id.split(":::")[0];
+                        xhr.open("GET", "/api/get/track/stream?track=" + encodeURIComponent(id));
+                        xhr.send();
+                        xhr.onload = function() {
+                            document.getElementById("progress").innerHTML = "Loading stream data...";
+                            var json = JSON.parse(xhr.responseText);
+                            document.getElementById("actualPlayer").src = json[0].url;
+                            var q = JSON.parse(localStorage.getItem("queue"));
+                            q[0].url = json[0].url;
+                            localStorage.setItem("queue", JSON.stringify(q));
+                            showQC();
+                        }
+                    }
                 }
             }
         }
