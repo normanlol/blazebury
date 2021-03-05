@@ -502,6 +502,7 @@ button:hover {
     width:150px;
     height:150px;
     float:left;
+    object-fit:cover;
 }
 
 .chip a {

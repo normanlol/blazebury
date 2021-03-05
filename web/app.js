@@ -396,7 +396,7 @@ function dumpIntoSection(location, id) {
                     cover.src = json.data.data[c].album.cover_big;
                     cover.title = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
                     cover.alt = "Cover of " + json.data.data[c].album.title + " by " + json.data.data[c].artist.name;
-                    cover.onerror = function () {this.src = "icon.png";}
+                    cover.onerror = function () {this.src = "/assets/icon.png";}
                     div.appendChild(cover);
                     var title = document.createElement("H3");
                     if (json.data.data[c].title_short.length <= 40) {
@@ -445,8 +445,8 @@ function dumpIntoSection(location, id) {
                     div.onclick = function () {getStream(this.id)}
                     var cover = document.createElement("IMG");
                     if (json.data.result[c].images) {cover.src = json.data.result[c].images[json.data.result[c].images.length - 1];}
-                    else {cover.src = "icon.png";}
-                    cover.onerror = function () {this.src = "icon.png";}
+                    else {cover.src = "/assets/icon.png";}
+                    cover.onerror = function () {this.src = "/assets/icon.png";}
                     div.appendChild(cover);
                     var title = document.createElement("H3");
                     if (json.data.result[c].name.length <= 40) {
@@ -468,8 +468,8 @@ function dumpIntoSection(location, id) {
                     div.classList.add("sectBlob");
                     var cover = document.createElement("IMG");
                     if (json.data.result[c].images) {cover.src = json.data.result[c].images[json.data.result[c].images.length - 1];}
-                    else {cover.src = "icon.png";}
-                    cover.onerror = function () {this.src = "icon.png";}
+                    else {cover.src = "/assets/icon.png";}
+                    cover.onerror = function () {this.src = "/assets/icon.png";}
                     div.appendChild(cover);
                     var title = document.createElement("H3");
                     if (json.data.result[c].name.length <= 40) {
@@ -499,8 +499,8 @@ function dumpIntoSection(location, id) {
                     div.onclick = function () {getStream(this.id)}
                     var cover = document.createElement("IMG");
                     if (json.data.items[c].bestThumbnail) {cover.src = json.data.items[c].bestThumbnail.url;}
-                    else {cover.src = "icon.png";}
-                    cover.onerror = function () {this.src = "icon.png";}
+                    else {cover.src = "/assets/icon.png";}
+                    cover.onerror = function () {this.src = "/assets/icon.png";}
                     div.appendChild(cover);
                     var title = document.createElement("H3");
                     if (json.data.items[c].title.length <= 40) {
@@ -527,8 +527,8 @@ function dumpIntoSection(location, id) {
                     div.onclick = function () {getStream(this.id)}
                     var cover = document.createElement("IMG");
                     if (json.data.items[c].playlistThumbnail) {cover.src = json.data.items[c].playlistThumbnail;}
-                    else {cover.src = "icon.png";}
-                    cover.onerror = function () {this.src = "icon.png";}
+                    else {cover.src = "/assets/icon.png";}
+                    cover.onerror = function () {this.src = "/assets/icon.png";}
                     div.appendChild(cover);
                     var title = document.createElement("H3");
                     if (json.data.items[c].title.length <= 40) {
@@ -600,7 +600,7 @@ function getStream(id) {
                 document.getElementById("actualPlayer").play();
             }
         } else if (json.source == "lastfm") {
-            if (json.data.images) {var cover = json.data.images[json.data.images.length - 1];} else {var cover = "icon.png"}
+            if (json.data.images) {var cover = json.data.images[json.data.images.length - 1];} else {var cover = "/assets/icon.png"}
             document.getElementById("cover").src = cover;
             document.getElementById("artistLink").href = "#artist#" + json.data.artistName;
             document.getElementById("artistName").innerHTML = json.data.artistName;
@@ -643,7 +643,7 @@ function getStream(id) {
                 document.getElementById("actualPlayer").play();
             }
         } else if (json.source == "youtube") {
-            if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url;} else {var cover = "icon.png"}
+            if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url;} else {var cover = "/assets/icon.png"}
             document.getElementById("cover").src = cover;
             document.getElementById("artistLink").href = "#artist#" + json.data.videoDetails.externalChannelId;
             document.getElementById("artistName").innerHTML = json.data.videoDetails.ownerChannelName;
@@ -776,7 +776,7 @@ function search() {
                         cover.src = json.results.data[c].album.cover_big;
                         cover.title = "Cover of " + json.results.data[c].album.title + " by " + json.results.data[c].artist.name;
                         cover.alt = "Cover of " + json.results.data[c].album.title + " by " + json.results.data[c].artist.name;
-                        cover.onerror = function () {this.src = "icon.png";}
+                        cover.onerror = function () {this.src = "/assets/icon.png";}
                         div.appendChild(cover);
                         var title = document.createElement("H3");
                         if (json.results.data[c].title_short.length <= 40) {
@@ -810,7 +810,7 @@ function search() {
                     div.onclick = function () {getStream(this.id)}
                     var cover = document.createElement("IMG");
                     cover.src = json.results.result.tracks[c].images[json.results.result.tracks[c].images.length - 1];
-                    cover.onerror = function () {this.src = "icon.png";}
+                    cover.onerror = function () {this.src = "/assets/icon.png";}
                     cover.title = "Cover of " + json.results.result.tracks[c].name + " by " + json.results.result.tracks[c].artistName;
                     cover.alt = "Cover of " + json.results.result.tracks[c].name + " by " + json.results.result.tracks[c].artistName;
                     div.appendChild(cover);
@@ -844,7 +844,7 @@ function search() {
                         div.onclick = function () {getStream(this.id)}
                         var cover = document.createElement("IMG");
                         cover.src = json.results.items[c].bestThumbnail.url;
-                        cover.onerror = function () {this.src = "icon.png";}
+                        cover.onerror = function () {this.src = "/assets/icon.png";}
                         cover.title = "Cover of " + json.results.items[c].title + " by " + json.results.items[c].author.name;
                         cover.alt = "Cover of " + json.results.items[c].title + " by " + json.results.items[c].author.name;
                         div.appendChild(cover);
@@ -968,7 +968,7 @@ function addToQueue(id) {
                 }
             } else if (json.source == "lastfm") {
                 if (!document.getElementById("player").getAttribute("playing-id")) {
-                    if (json.data.images) {var cover = json.data.images[json.data.images.length - 1];} else {var cover = "icon.png"}
+                    if (json.data.images) {var cover = json.data.images[json.data.images.length - 1];} else {var cover = "/assets/icon.png"}
                     document.getElementById("cover").src = cover;
                     document.getElementById("artistLink").href = "#artist#" + json.data.artistName;
                     document.getElementById("artistName").innerHTML = json.data.artistName;
@@ -1033,7 +1033,7 @@ function addToQueue(id) {
                 }
             } else if (json.source == "youtube") {
                 if (!document.getElementById("player").getAttribute("playing-id")) {
-                    if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url;} else {var cover = "icon.png"}
+                    if (json.data.videoDetails.thumbnails) {var cover = json.data.videoDetails.thumbnails[json.data.videoDetails.thumbnails.length - 1].url;} else {var cover = "/assets/icon.png"}
                     document.getElementById("cover").src = cover;
                     document.getElementById("artistLink").href = "#artist#" + json.data.videoDetails.externalChannelId;
                     document.getElementById("artistName").innerHTML = json.data.videoDetails.ownerChannelName;
@@ -1379,7 +1379,7 @@ function removeFromQueue(pos) {
         } else {
             document.getElementById("trackName").innerHTML = "Nothing is playing.";
             document.getElementById("artistName").innerHTML = "Blazebury Music";
-            document.getElementById("cover").src = "icon.png";
+            document.getElementById("cover").src = "/assets/icon.png";
         }
     } else if (n > pos) {
         var nn = (n - 1).toString();
